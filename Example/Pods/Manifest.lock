@@ -1,0 +1,16 @@
+PODS:
+  - ZQFilterMenuView (0.1.0)
+
+DEPENDENCIES:
+  - ZQFilterMenuView (from `../`)
+
+EXTERNAL SOURCES:
+  ZQFilterMenuView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ZQFilterMenuView: be0166f0fcbd2ea97527d73634524f9d58e0e2b5
+
+PODFILE CHECKSUM: 05499ce3a2eb00d199bc19ab1510dde1b1c377ef
+
+COCOAPODS: 1.9.1
