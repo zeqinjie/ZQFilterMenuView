@@ -1,16 +1,29 @@
 PODS:
-  - ZQFilterMenuView (0.1.0)
+  - Masonry (1.1.0)
+  - ZQFilterMenuView (0.1.0):
+    - Masonry
+    - ZQFoundationKit
+  - ZQFoundationKit (0.1.0):
+    - ZQFoundationKit/UIColorExtension (= 0.1.0)
+  - ZQFoundationKit/UIColorExtension (0.1.0)
 
 DEPENDENCIES:
   - ZQFilterMenuView (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - ZQFoundationKit
 
 EXTERNAL SOURCES:
   ZQFilterMenuView:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ZQFilterMenuView: ec11555b60509152cf3d7e4e8e77afdc1334c947
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  ZQFilterMenuView: de7bbca1c9bd58da235c33434a99ff65fb52a968
+  ZQFoundationKit: a007fa531d35830661b3cf3dae2d7a9282a409e5
 
-PODFILE CHECKSUM: 05499ce3a2eb00d199bc19ab1510dde1b1c377ef
+PODFILE CHECKSUM: d0b0f6bec7176db54e8f8c41cf5e7a28ef796120
 
 COCOAPODS: 1.9.1

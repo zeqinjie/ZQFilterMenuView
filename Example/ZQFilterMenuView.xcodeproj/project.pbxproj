@@ -247,7 +247,11 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "acct<blob>=0xE69D8EE69993E696B9";
 				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = 2RA5LSHPUJ;
+					};
 					6003F5AD195388D20070C39A = {
+						DevelopmentTeam = 2RA5LSHPUJ;
 						TestTargetID = 6003F589195388D20070C39A;
 					};
 				};
@@ -302,11 +306,15 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ZQFilterMenuView_Example/Pods-ZQFilterMenuView_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
 				"${BUILT_PRODUCTS_DIR}/ZQFilterMenuView/ZQFilterMenuView.framework",
+				"${BUILT_PRODUCTS_DIR}/ZQFoundationKit/ZQFoundationKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZQFilterMenuView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZQFoundationKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -494,6 +502,7 @@
 			baseConfigurationReference = 852DE1D6A53582C55B31A82A /* Pods-ZQFilterMenuView_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2RA5LSHPUJ;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZQFilterMenuView/ZQFilterMenuView-Prefix.pch";
 				INFOPLIST_FILE = "ZQFilterMenuView/ZQFilterMenuView-Info.plist";
@@ -510,6 +519,7 @@
 			baseConfigurationReference = D872E88B31E000BFDEA14B15 /* Pods-ZQFilterMenuView_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2RA5LSHPUJ;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZQFilterMenuView/ZQFilterMenuView-Prefix.pch";
 				INFOPLIST_FILE = "ZQFilterMenuView/ZQFilterMenuView-Info.plist";
@@ -526,6 +536,7 @@
 			baseConfigurationReference = 64E01B6BE958B4CF19BF5D6C /* Pods-ZQFilterMenuView_Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 2RA5LSHPUJ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -551,6 +562,7 @@
 			baseConfigurationReference = 01E3BC647CEF897B574EBDF2 /* Pods-ZQFilterMenuView_Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 2RA5LSHPUJ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",

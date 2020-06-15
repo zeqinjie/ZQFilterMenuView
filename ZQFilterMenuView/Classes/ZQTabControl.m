@@ -9,7 +9,7 @@
 #import "ZQTabControl.h"
 #import "ZQTabMenuBar.h"
 #import <ZQFoundationKit/UIColor+Util.h>
-#import "TWHouseUIKitTool.h"
+#import "ZQFilterMenuTool.h"
 @interface ZQTabControl ()
 
 @property (nonatomic, copy, readwrite) NSString *title;
@@ -38,8 +38,8 @@
     tabControl.titleLabel.font = [UIFont systemFontOfSize:14];
     tabControl.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [tabControl setTitleColor:tabControl.titleColor forState:UIControlStateNormal];
-    [tabControl setImage:[TWHouseUIKitTool imageNamed:@"twhouse_menu_down"] forState:UIControlStateNormal];
-    [tabControl setImage:[TWHouseUIKitTool imageNamed:@"twhouse_menu_up"] forState:UIControlStateSelected];
+    [tabControl setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_down"] forState:UIControlStateNormal];
+    [tabControl setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_up"] forState:UIControlStateSelected];
     return tabControl;
 }
 

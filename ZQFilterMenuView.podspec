@@ -32,11 +32,13 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'ZQFilterMenuView/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'ZQFilterMenuView' => ['ZQFilterMenuView/Assets/*.png']
-  # }
+   s.resource_bundles = {
+     'ZQFilterMenuView' => ['ZQFilterMenuView/Assets/*.png']
+   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  # 依赖库
+  s.dependency 'Masonry'
+  s.dependency 'ZQFoundationKit'
 end

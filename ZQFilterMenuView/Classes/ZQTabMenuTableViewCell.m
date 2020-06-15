@@ -8,7 +8,7 @@
 #import "ZQTabMenuTableViewCell.h"
 #import <ZQFoundationKit/UIColor+Util.h>
 #import <Masonry/Masonry.h>
-#import "TWHouseUIKitTool.h"
+#import "ZQFilterMenuTool.h"
 @interface ZQTabMenuTableViewCell()
 
 @end
@@ -30,8 +30,8 @@
     self.titleLabel.textColor = [UIColor colorWithHexString:@"222222"];
     self.titleLabel.font = [UIFont systemFontOfSize:15];
     self.checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.checkButton setImage:[TWHouseUIKitTool imageNamed:@"twhouse_menu_unsel"] forState:UIControlStateNormal];
-    [self.checkButton setImage:[TWHouseUIKitTool imageNamed:@"twhouse_menu_sel"] forState:UIControlStateSelected];
+    [self.checkButton setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_unsel"] forState:UIControlStateNormal];
+    [self.checkButton setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_sel"] forState:UIControlStateSelected];
     self.checkButton.userInteractionEnabled = NO;
     self.checkButton.hidden = YES;
     [self.contentView addSubview:self.checkButton];
