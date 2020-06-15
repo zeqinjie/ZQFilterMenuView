@@ -1,9 +1,9 @@
 {
   "name": "ZQFilterMenuView",
   "version": "0.1.0",
-  "summary": "A short description of ZQFilterMenuView.",
+  "summary": "ZQFilterMenuView 筛选器",
   "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/acct<blob>=0xE69D8EE69993E696B9/ZQFilterMenuView",
+  "homepage": "https://github.com/zeqinjie/ZQFilterMenuView",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
