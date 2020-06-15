@@ -25,10 +25,10 @@ TODO: Add long description of the pod here.
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'acct<blob>=0xE69D8EE69993E696B9' => 'zhengzeqin@addcn.com' }
-  s.source           = { :git => 'https://github.com/acct<blob>=0xE69D8EE69993E696B9/ZQFilterMenuView.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/zeqinjie/ZQFilterMenuView.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'ZQFilterMenuView/Classes/**/*'
   

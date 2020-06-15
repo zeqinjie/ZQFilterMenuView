@@ -22,7 +22,7 @@ pod 'ZQFilterMenuView'
 
 ## Author
 
-acct<blob>=0xE69D8EE69993E696B9, zhengzeqin@addcn.com
+zhengzeqin, zhengzeqin@addcn.com
 
 ## License
 
