@@ -2,12 +2,12 @@
 //  ZQViewController.m
 //  ZQFilterMenuView
 //
-//  Created by acct<blob>=0xE69D8EE69993E696B9 on 06/15/2020.
-//  Copyright (c) 2020 acct<blob>=0xE69D8EE69993E696B9. All rights reserved.
+//  Created by zhengzeqin on 06/15/2020.
+//  Copyright (c) 2020 zhengzeqin. All rights reserved.
 //
 
 #import "ZQViewController.h"
-
+#import "ZQFliterMenuBarView.h"
 @interface ZQViewController ()
 
 @end
@@ -18,6 +18,9 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    ZQFliterMenuBarView *barView = [[ZQFliterMenuBarView alloc]initWithFrame:CGRectMake(0, 44, self.view.frame.size.width, 54)];
+    [self.view addSubview:barView];
+    
 }
 
 - (void)didReceiveMemoryWarning
