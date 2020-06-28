@@ -7,9 +7,23 @@
 
 ## Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+- 筛选视图，条件筛选，多层筛选，类似搜房网等房地产筛选器，美团外卖下拉分类筛选器。
+- 支持一级到三级，复选和单选。
+- 支持自定义view,详情看demo 的更多
 
-## Requirements
+## USE
+
+- Installation with CocoaPods：pod 'ZQFilterMenuView'
+```objc
+#import "ZQTabMenuBar.h"
+#import "ZQTabControl.h"
+#import "ZQItemModel.h"
+#import "ZQTabMenuPriceView.h"
+#import "ZQTabMenuMoreView.h"
+#import "ZQTabMenuEnsureView.h"
+#import "ZQFliterSelectData.h"
+```
+
 
 ## Installation
 
