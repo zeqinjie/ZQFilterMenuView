@@ -12,7 +12,7 @@
 #define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
-@interface ZQFliterMenuBarView ()
+@interface ZQFliterMenuBarView ()<ZQTabMenuBarDelegate>
 /// 数据
 @property (strong, nonatomic) ZQFliterMenuBarViewModel *viewModel;
 /// mebuBar
@@ -25,18 +25,20 @@
 @property (strong, nonatomic) ZQTabControl *priceControl;
 /// 更多
 @property (strong, nonatomic) ZQTabControl *moreControl;
-/// 更多自定义视图
+/// 更多 自定义视图
 @property (strong, nonatomic) ZQTabMenuMoreView *moreView;
 /// 价格输入框
 @property (strong, nonatomic) ZQTabMenuPriceView *priceInputView;
-
+/// 控制按钮
 @property (strong, nonatomic) NSMutableArray<ZQTabControl *> *controlBars;
+
 @end
 @implementation ZQFliterMenuBarView
 
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
+        self.viewModel = [[ZQFliterMenuBarViewModel alloc]init];
         [self configureFilterData];
         [self creatUI];
     }
@@ -50,9 +52,25 @@
     return _controlBars;;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+    UIView *resultView = [super hitTest:point withEvent:event];
+    if (resultView != nil) {
+        return resultView;
+    }else{
+        for (UIView *subView in self.subviews.reverseObjectEnumerator) {
+            CGPoint convertPoint = [subView convertPoint:point fromView:self];
+            UIView *hitView = [subView hitTest:convertPoint withEvent:event];
+            if (hitView != nil) {
+                return hitView;
+            }
+        }
+    }
+    return nil;
+}
+
 #pragma mark - Data
 - (void)configureFilterData{
-    
+    [self.viewModel configureData];
 }
 
 #pragma mark - UI
@@ -68,7 +86,7 @@
     self.moreView.tag = 3;
     self.moreView.ListDataSource = self.viewModel.moreDataSource;
     self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic) {
-        
+        NSLog(@"更多多选 selectDic : %@ moreSeletedDic : %@",selectDic,moreSeletedDic);
     };
 }
 
@@ -104,7 +122,7 @@
     self.moreControl = [self creatControl:@"更多"
                                       tag:3
                               controlType:TabControlTypeCustom
-                        controlCustomView:nil
+                        controlCustomView:self.moreView
                                  aligment:NSTextAlignmentCenter];
     [self.controlBars addObject:self.moreControl];
     
@@ -118,7 +136,12 @@
 }
 
 - (void)creatInputPriceView{
-    
+    self.priceInputView = [[ZQTabMenuPriceView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 71)];
+    self.priceInputView.unitStr = @"万";
+    self.priceInputView.inputValueBlock = ^(NSInteger tag, NSString *title, NSDictionary *idDic) {
+        NSLog(@"确定选中 idDic = %@",idDic);
+    };
+    self.priceInputView.tabControl = self.priceControl;
 }
 
 - (ZQTabControl *)creatControl:(NSString *)controlTitle
@@ -135,7 +158,7 @@
     tabControl.tag = tag;
     tabControl.menuLargthHeigth = 400;
     tabControl.didSelectedMenuAllData = ^(ZQTabControl *tabControl, NSInteger flag, ZQFliterSelectData *selectData, ZQItemModel *selectModel) {
-//        NSLog(@"");
+        NSLog(@"确定选中 selectData = %@",selectData);
     };
     if (controlCustomView) {
         tabControl.displayCustomWithMenu = ^UIView *{
@@ -143,5 +166,25 @@
         };
     }
     return tabControl;
+}
+
+#pragma mark - ZQTabMenuBarDelegate
+- (void)tabMenuViewWillAppear:(ZQTabMenuBar *)view tabControl:(ZQTabControl *)tabControl{
+    if (tabControl == self.moreControl) {
+        [self.moreView tabMenuViewWillAppear];
+    }
+}
+
+- (void)tabMenuViewWillDisappear:(ZQTabMenuBar *)view tabControl:(ZQTabControl *)tabControl{
+    if (tabControl == self.moreControl) {
+        [self.moreView tabMenuViewWillDisappear];
+    }
+}
+
+- (UIView *)tabMenuViewFooterView:(ZQTabMenuBar *)view tabControl:(ZQTabControl *)tabControl{
+    if (tabControl == self.priceControl) {
+        return self.priceInputView;
+    }
+    return nil;
 }
 @end

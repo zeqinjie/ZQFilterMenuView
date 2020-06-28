@@ -7,7 +7,7 @@
 //
 
 #import "ZQViewController.h"
-#import "ZQFliterMenuBarView.h"
+
 @interface ZQViewController ()
 
 @end
@@ -18,8 +18,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    ZQFliterMenuBarView *barView = [[ZQFliterMenuBarView alloc]initWithFrame:CGRectMake(0, 44, self.view.frame.size.width, 54)];
-    [self.view addSubview:barView];
+    
     
 }
 

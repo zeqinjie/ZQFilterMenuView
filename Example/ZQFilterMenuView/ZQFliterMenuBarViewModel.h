@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSArray<ZQItemModel *> *typeDataSource;
 @property (strong, nonatomic) NSArray<ZQItemModel *> *priceDataSource;
 @property (strong, nonatomic) NSArray<ZQItemModel *> *moreDataSource;
+- (void)configureData;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		150415D224A7364B00B93630 /* ZQFliterMenuBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 150415D124A7364B00B93630 /* ZQFliterMenuBarView.m */; };
 		150415D524A7383E00B93630 /* ZQFliterMenuBarViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 150415D424A7383E00B93630 /* ZQFliterMenuBarViewModel.m */; };
+		1528596124A8493200D9D280 /* ZQFliterMenuBarViewTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1528596024A8493200D9D280 /* ZQFliterMenuBarViewTool.m */; };
+		1528596424A88CB500D9D280 /* ZQSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1528596324A88CB500D9D280 /* ZQSecondViewController.m */; };
 		1551043F24A732D0002EA329 /* Configure.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1551043E24A732D0002EA329 /* Configure.plist */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -46,6 +48,10 @@
 		150415D124A7364B00B93630 /* ZQFliterMenuBarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZQFliterMenuBarView.m; sourceTree = "<group>"; };
 		150415D324A7383E00B93630 /* ZQFliterMenuBarViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZQFliterMenuBarViewModel.h; sourceTree = "<group>"; };
 		150415D424A7383E00B93630 /* ZQFliterMenuBarViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZQFliterMenuBarViewModel.m; sourceTree = "<group>"; };
+		1528595F24A8493200D9D280 /* ZQFliterMenuBarViewTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZQFliterMenuBarViewTool.h; sourceTree = "<group>"; };
+		1528596024A8493200D9D280 /* ZQFliterMenuBarViewTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZQFliterMenuBarViewTool.m; sourceTree = "<group>"; };
+		1528596224A88CB500D9D280 /* ZQSecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZQSecondViewController.h; sourceTree = "<group>"; };
+		1528596324A88CB500D9D280 /* ZQSecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZQSecondViewController.m; sourceTree = "<group>"; };
 		1551043E24A732D0002EA329 /* Configure.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Configure.plist; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* ZQFilterMenuView_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZQFilterMenuView_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -156,10 +162,14 @@
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
 				6003F5A5195388D20070C39A /* ZQViewController.h */,
 				6003F5A6195388D20070C39A /* ZQViewController.m */,
+				1528596224A88CB500D9D280 /* ZQSecondViewController.h */,
+				1528596324A88CB500D9D280 /* ZQSecondViewController.m */,
 				150415D324A7383E00B93630 /* ZQFliterMenuBarViewModel.h */,
 				150415D424A7383E00B93630 /* ZQFliterMenuBarViewModel.m */,
 				150415D024A7364B00B93630 /* ZQFliterMenuBarView.h */,
 				150415D124A7364B00B93630 /* ZQFliterMenuBarView.m */,
+				1528595F24A8493200D9D280 /* ZQFliterMenuBarViewTool.h */,
+				1528596024A8493200D9D280 /* ZQFliterMenuBarViewTool.m */,
 				1551043E24A732D0002EA329 /* Configure.plist */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
@@ -388,6 +398,8 @@
 			files = (
 				6003F59E195388D20070C39A /* ZQAppDelegate.m in Sources */,
 				150415D524A7383E00B93630 /* ZQFliterMenuBarViewModel.m in Sources */,
+				1528596424A88CB500D9D280 /* ZQSecondViewController.m in Sources */,
+				1528596124A8493200D9D280 /* ZQFliterMenuBarViewTool.m in Sources */,
 				6003F5A7195388D20070C39A /* ZQViewController.m in Sources */,
 				150415D224A7364B00B93630 /* ZQFliterMenuBarView.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
