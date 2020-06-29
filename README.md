@@ -14,13 +14,15 @@
 
 ![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/123.gif)
 
-![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/1.png)
 
-![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/2.png)
+<img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/1.png" width="300" height="650" align="middle"/>
 
-![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/3.png)
+<img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/2.png" width="300" height="650" align="middle"/>
 
-![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/4.png)
+<img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/3.png" width="300" height="650" align="middle"/>
+
+<img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/4.png" width="300" height="650" align="middle"/>
+
 
 ## USE
 
