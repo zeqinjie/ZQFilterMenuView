@@ -10,8 +10,9 @@
 - 筛选视图，条件筛选，多层筛选，类似搜房网等房地产筛选器，美团外卖下拉分类筛选器。
 - 支持一级到三级，复选和单选。
 - 支持自定义view,详情看demo 的更多
+* 效果
 
-![](../assets/123.gif)
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/123.gif)
 
 ## USE
 
