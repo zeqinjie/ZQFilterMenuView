@@ -12,7 +12,7 @@
 - 支持自定义view,详情看demo 的更多
 * 效果
 
-![图片](../assets/123.gif)
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/123.gif)
 
 ## USE
 
