@@ -11,6 +11,8 @@
 - 支持一级到三级，复选和单选。
 - 支持自定义view,详情看demo 的更多
 
+![](../assets/123.gif)
+
 ## USE
 
 - Installation with CocoaPods：pod 'ZQFilterMenuView'
