@@ -14,6 +14,14 @@
 
 ![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/123.gif)
 
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/1.png)
+
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/2.png)
+
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/3.png)
+
+![图片](https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/4.png)
+
 ## USE
 
 - Installation with CocoaPods：pod 'ZQFilterMenuView'
