@@ -6,12 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
+@class ZQFilterMenuEnsureViewConfig;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ZQTabMenuEnsureView : UIView
 @property (nonatomic, copy) void(^clickAction)(NSInteger tag);
-@property (nonatomic, strong) UIColor *styleColor;
+
+- (instancetype)initWithConfig:(ZQFilterMenuEnsureViewConfig *)config;
+
 @end
 
 NS_ASSUME_NONNULL_END

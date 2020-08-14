@@ -40,7 +40,20 @@
     return NO;
 }
 
+/// 递归获取祖父model
+- (ZQItemModel *)getGrandFatherModel{
+    return [self getGrandFatherModelWithItemModel:self.fatherModel];
+}
 
+- (ZQItemModel *)getGrandFatherModelWithItemModel:(ZQItemModel *)faterModel {
+    ZQItemModel *fater = faterModel.fatherModel;
+    if (fater == nil) {
+        return faterModel;
+    } else {
+        return [self getGrandFatherModelWithItemModel:fater];
+    }
+    return nil;
+}
 ZQLuckyMutableCopyImplementation
 
 @end

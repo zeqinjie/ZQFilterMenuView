@@ -110,7 +110,7 @@
         NSString *idStr = [secondArr firstObject];
         ZQItemModel *secondModel = [self creatMenuModel:secondArr selectedId:firstSelectedId selectMode:firstSelectMode];
         secondModel.plistKey = firstKey;
-        secondModel.faterModel = faterModel;
+        secondModel.fatherModel = faterModel;
         [modelArr addObject:secondModel];
         if (isShowSecond) {
             //第三级别
@@ -120,7 +120,7 @@
                 NSArray *thirdArr = sectionArr[j];
                 ZQItemModel *thirdModel = [self creatMenuModel:thirdArr selectedId:secondSelectedId selectMode:secondSelectMode];
                 thirdModel.plistKey = secondKey;
-                thirdModel.faterModel = secondModel;
+                thirdModel.fatherModel = secondModel;
                 [secondModelArr addObject:thirdModel];
             }
             secondModel.dataSource = secondModelArr;

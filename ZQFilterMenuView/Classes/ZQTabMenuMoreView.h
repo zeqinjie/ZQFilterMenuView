@@ -8,20 +8,36 @@
 #import <UIKit/UIKit.h>
 #import "ZQItemModel.h"
 #import "ZQTabControl.h"
+@class ZQTabMenuEnsureView;
+@class ZQTabMenuMoreFilterData;
+@class ZQFilterMenuMoreViewConfig;
+@class ZQFilterMenuEnsureViewConfig;
+@class ZQFilterMenuRangeViewConfig;
+@class ZQTabMenuPriceView;
 @interface ZQTabMenuMoreView : UIView
-@property (nonatomic, copy) void (^selectBlock)(ZQTabMenuMoreView *view,NSMutableDictionary *selectDic,NSMutableDictionary *moreSeletedDic);
-//选择颜色
-@property (nonatomic, strong) UIColor *styleColor;
-//选中背景颜色
-@property (nonatomic, strong) UIColor *didSelectBgColor;
-//未选中背景颜色
-@property (nonatomic, strong) UIColor *didUnSelectBgColor;
+@property (nonatomic, copy) void (^selectBlock)(ZQTabMenuMoreView *view,NSMutableDictionary *selectDic,NSMutableDictionary *moreSeletedDic,NSString *selectTitles);
+
+//输入框选中
+@property (nonatomic, copy) void (^inputSelectBlock)(ZQTabMenuMoreView *view,NSInteger tag, NSString *title, NSDictionary *idDic);
+
 @property (nonatomic, strong) NSArray <ZQItemModel *>*ListDataSource;
 @property (nonatomic, weak) ZQTabControl *tabControl;
+// 底部按钮视图
+@property (nonatomic, strong) ZQTabMenuEnsureView *ensureView;
+//底部输入框视图
+@property (nonatomic, strong) ZQTabMenuPriceView *inputView;
+// 筛选数据
+@property (nonatomic, strong) ZQTabMenuMoreFilterData *fliterData;
 - (void)tabMenuViewWillAppear;
 - (void)tabMenuViewWillDisappear;
 /// 设置选中状态
 - (void)setTabControlTitle;
+
+- (instancetype)initWithMoreViewConfig:(ZQFilterMenuMoreViewConfig *)moreViewConfig
+                      ensureViewConfig:(ZQFilterMenuEnsureViewConfig *)ensureViewConfig;
+
+- (instancetype)initWithMoreViewConfig:(ZQFilterMenuMoreViewConfig *)moreViewConfig
+                       rangeViewConfig:(ZQFilterMenuRangeViewConfig *)rangeViewConfig;
 @end
 
 

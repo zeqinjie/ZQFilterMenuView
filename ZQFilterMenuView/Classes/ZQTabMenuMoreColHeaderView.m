@@ -7,7 +7,8 @@
 
 #import "ZQTabMenuMoreColHeaderView.h"
 #import <Masonry/Masonry.h>
-#import <ZQFoundationKit/ZQFoundationKit.h>
+#import <ZQFoundationKit/UIColor+Util.h>
+#import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuMoreColHeaderView()
 
 @end
@@ -32,6 +33,11 @@
         make.left.equalTo(@20);
         make.height.equalTo(@16);
     }];
+}
+
+- (void)setConfig:(ZQFilterMenuMoreViewConfig *)config {
+    _config = config;
+    self.titleLabel.textColor = config.moreSectionHeaderTitleColor;
 }
 
 @end

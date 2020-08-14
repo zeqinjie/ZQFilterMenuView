@@ -14,11 +14,12 @@ typedef NS_ENUM(NSInteger, TabControlType) {
     TabControlTypeCustom  //自定义形式
 };
 
-@class ZQItemModel,ZQFliterSelectData,ZQTabControl;
+@class ZQItemModel,ZQFliterSelectData,ZQTabControl,ZQFilterMenuControlConfig;
 typedef void(^ZQTabDidSelectedMenuAllDataBlock)(ZQTabControl *tabControl,NSInteger flag, ZQFliterSelectData *selectData, ZQItemModel *selectModel);
 typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
 @interface ZQTabControl : UIButton
 @property (nonatomic, copy, readonly) NSString *title;
+@property (nonatomic, strong, readonly) ZQFilterMenuControlConfig *config;
 @property (nonatomic, assign, readonly) TabControlType tabControlType;
 @property (nonatomic, copy) ZQTabDisplayCustomWithMenu displayCustomWithMenu;
 @property (nonatomic, strong) NSArray <ZQItemModel *>*ListDataSource;
@@ -28,46 +29,13 @@ typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
 */
 @property (nonatomic, copy) ZQTabDidSelectedMenuAllDataBlock didSelectedMenuAllData;
 
-@property (nonatomic, assign) CGFloat fontSize;
 /// **************** menuview 的部分
-/**
- 字体对齐方式
- */
-@property (nonatomic, assign) NSTextAlignment menuAligment;
-/**
- 字体大小
- */
-@property (nonatomic, assign) CGFloat menuFontSize;
 /**
  是否需要默认选中第二行第一项 默认是不需要
  */
 @property (nonatomic, assign) BOOL menuSecondListFirSelected;
-/**
- 限制输入title字数长度
- */
-@property (nonatomic, assign) NSInteger menuTitleLength;
 
-/**
- cell 默认高度 44
- */
-@property (nonatomic, assign) CGFloat menuCellHeigth;
-/**
- 最大高度
- */
-@property (nonatomic, assign) CGFloat menuLargthHeigth;
-
-/// 字体选中颜色 默认ff8000
-@property (nonatomic, strong) UIColor *selTitleColor;
-///  默认颜色
-@property (nonatomic, strong) UIColor *titleColor;
-
-/**
- menuview的展示高度系数 默认是0.5
- */
-@property (nonatomic, assign) CGFloat menuViewHeigthRatio;
-
-
-+ (instancetype)tabControlWithTitle:(NSString *)title type:(TabControlType)type;
++ (instancetype)tabControlWithConfig:(ZQFilterMenuControlConfig *)config;
 
 /**
  控件初始化title

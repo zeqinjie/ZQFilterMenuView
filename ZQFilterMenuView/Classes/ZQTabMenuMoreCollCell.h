@@ -6,16 +6,12 @@
 //
 
 #import <UIKit/UIKit.h>
+@class ZQFilterMenuMoreViewConfig;
 
 @interface ZQTabMenuMoreCollCell : UICollectionViewCell
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (assign, nonatomic) BOOL isChoice;
-//选择颜色
-@property (nonatomic, strong) UIColor *styleColor;
-//选中背景颜色
-@property (nonatomic, strong) UIColor *didSelectBgColor;
-//未选中背景颜色
-@property (nonatomic, strong) UIColor *didUnSelectBgColor;
+@property (nonatomic, strong) ZQFilterMenuMoreViewConfig *config;
 @end
 
 

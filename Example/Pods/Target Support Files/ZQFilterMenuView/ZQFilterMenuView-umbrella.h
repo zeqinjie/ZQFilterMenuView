@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "ZQFilterMenuConfig.h"
 #import "ZQFilterMenuHeader.h"
 #import "ZQFilterMenuTool.h"
 #import "ZQFliterModelHeader.h"

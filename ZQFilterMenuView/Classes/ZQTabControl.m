@@ -9,37 +9,34 @@
 #import "ZQTabControl.h"
 #import "ZQTabMenuBar.h"
 #import <ZQFoundationKit/UIColor+Util.h>
-#import "ZQFilterMenuTool.h"
+#import "ZQFilterMenuConfig.h"
 @interface ZQTabControl ()
 
 @property (nonatomic, copy, readwrite) NSString *title;
-@property (nonatomic, assign, readwrite) TabControlType tabControlType;
 /** 私有属性用于自定义视图 主动移除筛选列表  */
 @property (nonatomic, copy) void (^didDismissTabMenuBar)(void);
 // 是否已经选择赋值
 @property (nonatomic, assign) BOOL isHadChoice;
 // 是否只显示选择图片
 @property (nonatomic, assign) BOOL isShowPic;
+/** 配置对象 */
+@property (nonatomic, strong, readwrite) ZQFilterMenuControlConfig *config;
 
 @end
 
 @implementation ZQTabControl
 
-+ (instancetype)tabControlWithTitle:(NSString *)title type:(TabControlType)type
++ (instancetype)tabControlWithConfig:(ZQFilterMenuControlConfig *)config
 {
     ZQTabControl *tabControl = [[ZQTabControl alloc] init];
-    tabControl.title = title;
-    tabControl.tabControlType = type;
-    tabControl.menuViewHeigthRatio = 0.5;
-    tabControl.menuCellHeigth = 44;
-    tabControl.selTitleColor = [UIColor colorWithHexString:@"ff8000"];
-    tabControl.titleColor = [UIColor colorWithHexString:@"222222"];
-    [tabControl setTitle:title forState:UIControlStateNormal];
-    tabControl.titleLabel.font = [UIFont systemFontOfSize:14];
+    tabControl.config = config;
+    tabControl.title = config.title;
+    [tabControl setTitle:config.title forState:UIControlStateNormal];
+    tabControl.titleLabel.font = config.titleFont;
     tabControl.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [tabControl setTitleColor:tabControl.titleColor forState:UIControlStateNormal];
-    [tabControl setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_down"] forState:UIControlStateNormal];
-    [tabControl setImage:[ZQFilterMenuTool imageNamed:@"twhouse_menu_up"] forState:UIControlStateSelected];
+    [tabControl setTitleColor:config.titleNormalColor forState:UIControlStateNormal];
+    [tabControl setImage:config.indicatorNormalImg forState:UIControlStateNormal];
+    [tabControl setImage:config.indicatorSelectedImg forState:UIControlStateSelected];
     return tabControl;
 }
 
@@ -47,22 +44,21 @@
     return self.title;
 }
 
+- (TabControlType)tabControlType {
+    return self.config.type;
+}
+
 - (void)adjustFrame {
     [self setTitleEdgeInsets:UIEdgeInsetsMake(0, -self.imageView.bounds.size.width + 2, 0, self.imageView.bounds.size.width + 10)];
     [self setImageEdgeInsets:UIEdgeInsetsMake(0, self.titleLabel.bounds.size.width + 10, 0, -self.titleLabel.bounds.size.width + 2)];
 }
 
-- (void)setFontSize:(CGFloat)fontSize{
-    _fontSize = fontSize;
-    self.titleLabel.font = [UIFont systemFontOfSize:fontSize];
-}
-
 - (void)adjustTitle:(NSString *)title textColor:(UIColor *)color {
     if (![title isKindOfClass:[NSString class]]) return;
-    if (_menuTitleLength == 0) {
+    if (self.config.titleLength == 0) {
         [self setTitle:title forState:UIControlStateNormal];
     }else{
-        [self setTitle:[self subString:title count:_menuTitleLength] forState:UIControlStateNormal];
+        [self setTitle:[self subString:title count:self.config.titleLength] forState:UIControlStateNormal];
     }
     [self setTitleColor:color forState:UIControlStateNormal];
     [self adjustFrame];
@@ -111,7 +107,7 @@
 
 /// 设置titleColor
 - (void)setControlTitleStatus:(BOOL)isSelect title:(NSString *)title selTitle:(NSString *)selTitle{
-    [self adjustTitle:(isSelect ? selTitle : title) textColor:isSelect ? self.selTitleColor : self.titleColor];
+    [self adjustTitle:(isSelect ? selTitle : title) textColor:isSelect ? self.config.titleSelectedColor : self.config.titleNormalColor];
 }
 
 - (void)setControlTitle:(NSString *)title{

@@ -9,19 +9,27 @@
 #import "ZQSeperateLine.h"
 #import "ZQFliterModelHeader.h"
 #import <ZQFoundationKit/UIColor+Util.h>
+
 #import <Masonry/Masonry.h>
+#import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuEnsureView()
 @property (strong, nonatomic) UIButton *resetBtn;
 @property (strong, nonatomic) UIButton *confirmBtn;
 @property (nonatomic, strong) ZQSeperateLine *topLine;
+@property (nonatomic, strong) ZQFilterMenuEnsureViewConfig *config;
 @end
 
 @implementation ZQTabMenuEnsureView
 
-- (instancetype)initWithFrame:(CGRect)frame{
-    self = [super initWithFrame:frame];
+- (instancetype)initWithConfig:(ZQFilterMenuEnsureViewConfig *)config {
+    self = [super initWithFrame:CGRectZero];
     if (self) {
-         [self creatUI];
+        self.config = config;
+        if (self.config.isHiddenResetBtn) {
+            [self cretaeConfirmBtnUI];
+        } else {
+            [self creatUI];
+        }
     }
     return self;
 }
@@ -39,10 +47,14 @@
     CGFloat width = (ZQScreenWidth - GAP * 3)/2;
     CGFloat heigth = 47;
     CGFloat y = (self.frame.size.height - heigth)/2;
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = self.config.backgroundColor;
     //重置按鈕
-    UIButton *resetBtn = [self creatButtonTitle:@"重置" color:[UIColor colorWithHexString:@"999999"] fontSize:16 target:self action:@selector(btnAction:)];
-    resetBtn.backgroundColor = [UIColor colorWithHexString:@"f5f5f5"];
+    UIButton *resetBtn = [self creatButtonTitle:self.config.resetBtnTitle
+                                          color:self.config.resetBtnTitleColor
+                                           font:self.config.resetBtnFont
+                                         target:self
+                                         action:@selector(btnAction:)];
+    resetBtn.backgroundColor = self.config.resetBtnBgColor;
     resetBtn.tag = 1;
     [self addSubview:resetBtn];
     resetBtn.frame = CGRectMake(GAP, y, width, heigth);
@@ -55,8 +67,12 @@
     self.resetBtn = resetBtn;
     
     //確定按鈕
-    UIButton *confirmBtn = [self creatButtonTitle:@"確定" color:[UIColor whiteColor] fontSize:16 target:self action:@selector(btnAction:)];
-    confirmBtn.backgroundColor = [UIColor colorWithHexString:@"ff8000"];
+    UIButton *confirmBtn = [self creatButtonTitle:self.config.confirmBtnTitle
+                                            color:self.config.confirmBtnTitleColor
+                                             font:self.config.confirmBtnFont
+                                           target:self
+                                           action:@selector(btnAction:)];
+    confirmBtn.backgroundColor = self.config.confirmBtnBgColor;
     confirmBtn.tag = 2;
     [self addSubview:confirmBtn];
     confirmBtn.frame = CGRectMake(resetBtn.frame.size.width + resetBtn.frame.origin.x + GAP, y, width, heigth);
@@ -68,24 +84,41 @@
     [self addSubview:self.topLine];
 }
 
-- (void)setStyleColor:(UIColor *)styleColor {
-    _styleColor = styleColor;
-    self.confirmBtn.backgroundColor = styleColor;
-    [self.resetBtn setTitleColor:styleColor forState:UIControlStateNormal];
-    [self.resetBtn setTitleColor:styleColor forState:UIControlStateSelected];
+//單獨確認UI
+- (void)cretaeConfirmBtnUI {
+    CGFloat width = (ZQScreenWidth - GAP * 2)/2;
+    CGFloat heigth = 47;
+    CGFloat y = (self.frame.size.height - heigth)/2;
+    //確定按鈕
+    UIButton *confirmBtn = [self creatButtonTitle:self.config.confirmBtnTitle
+                                            color:self.config.confirmBtnTitleColor
+                                             font:self.config.confirmBtnFont
+                                           target:self
+                                           action:@selector(btnAction:)];
+    confirmBtn.backgroundColor = self.config.confirmBtnBgColor;
+    confirmBtn.tag = 2;
+    [self addSubview:confirmBtn];
+    confirmBtn.frame = CGRectMake(GAP, y, width, heigth);
+    [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-GAP);
+        make.left.mas_equalTo(GAP);
+        make.height.mas_equalTo(heigth);
+        make.width.mas_equalTo(width);
+    }];
+    self.confirmBtn = confirmBtn;
+    [self addSubview:self.topLine];
 }
-
 
 #pragma mark - Private Method
 - (UIButton *)creatButtonTitle:(NSString *)title
                          color:(UIColor *)color
-                      fontSize:(CGFloat)size
+                          font:(UIFont *)font
                         target:(id)target
                         action:(SEL)action{
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     if(title)[btn setTitle:title forState:UIControlStateNormal];
     [btn addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
-    btn.titleLabel.font = [UIFont systemFontOfSize:size];
+    btn.titleLabel.font = font;
     btn.clipsToBounds = YES;
     btn.layer.cornerRadius = 2;
     if(color)[btn setTitleColor:color forState:UIControlStateNormal];
@@ -100,3 +133,4 @@
 }
 
 @end
+

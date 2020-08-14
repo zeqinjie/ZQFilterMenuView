@@ -15,6 +15,7 @@
 #import "ZQFliterSelectData.h"
 #import "ZQFliterModelHeader.h"
 #import <ZQFoundationKit/UIColor+Util.h>
+
 #define kMAXCount  3 //最大多少列
 #define kMutitTitle @"多選"
 //#define ZQTabMenuViewHeigthRatio      0.4
@@ -45,9 +46,6 @@
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIView *menuFooterView;//底部view
 @property (nonatomic, strong) ZQTabMenuEnsureView *ensureView;//确认view
-@property (nonatomic, assign) CGFloat menuViewHeigthRatio;
-@property (nonatomic, assign) CGFloat menuCellHeigth;
-@property (nonatomic, assign) CGFloat menuLargthHeigth;
 
 @end
 
@@ -59,12 +57,7 @@
 - (instancetype)initWithTabControl:(ZQTabControl *)tabControl {
     if (self = [super init]) {
         self.tabControl = tabControl;
-        self.menuAligment = tabControl.menuAligment;
         self.menuSecondListFirSelected = tabControl.menuSecondListFirSelected;
-        self.menuFontSize = tabControl.menuFontSize;
-        self.menuViewHeigthRatio = tabControl.menuViewHeigthRatio;
-        self.menuCellHeigth = tabControl.menuCellHeigth;
-        self.menuLargthHeigth = tabControl.menuLargthHeigth;
         self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.6];
         [self reloadSeletedListDataSource];
     }
@@ -126,10 +119,11 @@
     if (self.showListViewCount != count) { //展示的个数调整
         self.showListViewCount = count;
         CGRect adjustFrame = self.frame;
-        CGFloat height = adjustFrame.size.height * self.menuViewHeigthRatio;
-        if (self.menuLargthHeigth != 0) {//注意如果不是0 则限制最大高度
-            if (height > self.menuLargthHeigth) {
-                height = self.menuLargthHeigth;
+        CGFloat height = adjustFrame.size.height * self.tabControl.config.menuViewHeigthRatio;
+        CGFloat menuLargthHeigth = self.tabControl.config.menuViewLargthHeight;
+        if (menuLargthHeigth != 0) {//注意如果不是0 则限制最大高度
+            if (height > menuLargthHeigth) {
+                height = menuLargthHeigth;
             }
         }
         adjustFrame.size.height = height;
@@ -243,6 +237,24 @@
     }
 }
 
+// 获取与tableView对应的背景颜色
+- (UIColor *)fetchTableViewBgColorWithIndex:(NSInteger)index {
+    NSArray *colors = self.tabControl.config.menuViewTableViewBgColors;
+    if (colors && index <= (int)[colors count]-1) {
+        return colors[index];
+    }
+    return self.tabControl.config.menuViewTableViewBgColor;
+}
+
+// 获取与tableView对应的分割线颜色
+- (UIColor *)fetchTableViewSeparatorColorWithIndex:(NSInteger)index {
+    NSArray *colors = self.tabControl.config.menuViewTableViewSeparatorColors;
+    if (colors && index <= (int)[colors count]-1) {
+        return colors[index];
+    }
+    return self.tabControl.config.menuViewTableViewSeparatorColor;
+}
+
 #pragma mark - Action
 //多选的重置
 - (void)retSetAction{
@@ -297,16 +309,11 @@
             tableView.delegate = self;
             tableView.dataSource = self;
             tableView.showsVerticalScrollIndicator = NO;
-            tableView.separatorColor = [UIColor colorWithHexString:@"e6e6e6"];
-            tableView.backgroundColor = [UIColor whiteColor];
+            tableView.separatorColor = [self fetchTableViewSeparatorColorWithIndex:idx];
+            tableView.backgroundColor = [self fetchTableViewBgColorWithIndex:idx];
             tableView.estimatedRowHeight = 0;
             tableView.estimatedSectionHeaderHeight = 0;
             tableView.estimatedSectionFooterHeight = 0;
-            if (idx == 1) {
-                tableView.backgroundColor = [UIColor colorWithHexString:@"fafafa"];
-            }else if (idx == 2){
-                tableView.backgroundColor = [UIColor colorWithHexString:@"f5f5f5"];
-            }
             tableView.tag = idx;
             tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0.01)];
             [weakSelf.contentView addSubview:tableView];
@@ -338,7 +345,8 @@
 - (ZQTabMenuEnsureView *)ensureView{
     if(!_ensureView){
         ZQWS(weakSelf);
-        _ensureView = [[ZQTabMenuEnsureView alloc]initWithFrame:CGRectMake(0, 0, ZQScreenWidth, 71)];
+        _ensureView = [[ZQTabMenuEnsureView alloc] initWithConfig:self.tabControl.config.ensureViewConfig];
+        _ensureView.frame = CGRectMake(0, 0, ZQScreenWidth, 71);
         _ensureView.clickAction = ^(NSInteger tag) {
             if (tag == 1) { // 重置
                 [weakSelf retSetAction];
@@ -382,7 +390,7 @@
         [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:nil selectIndex:-1 flag:0];
         NSInteger type = 0;
         if ([selectModel isShowUnlimited]) {//不限 展示父的title
-            ZQItemModel *father = selectModel.faterModel;
+            ZQItemModel *father = selectModel.fatherModel;
             if (father == nil) {
                 type = 1;//展示title
             }else{
@@ -406,9 +414,7 @@
     NSArray<ZQItemModel *> *dataSource = [self.selectData getListDataSource:self.listDataSource listViewIndex:listViewIndex];
     ZQItemModel *model = dataSource[indexPath.row];
     model.indexPath = indexPath;//标记数据模型下标
-    cell.menuFontSize = self.menuFontSize;
-    cell.menuAligment = self.menuAligment;
-    cell.styleColor = self.styleColor;
+    cell.config = self.tabControl.config;
     cell.model = model;
     ZQFliterSelectData *childSelectData = self.selectData.dict[@(listViewIndex)];
     cell.isChoice = [childSelectData isChoiceModel:model];
@@ -453,7 +459,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return self.menuCellHeigth;
+    return self.tabControl.config.menuCellHeigth;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{

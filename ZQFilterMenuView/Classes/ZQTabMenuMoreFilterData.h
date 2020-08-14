@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAllExtenFixModel:(NSMutableArray<ZQItemModel *> *)arr selectModel:(ZQItemModel *)selectModel;
 /// 複選對象操作
 - (void)selectModel:(ZQItemModel *)model arr:(NSMutableArray<ZQItemModel *> *)arr;
+///移除不限对象
+- (void)removeUnlimitedModelWithArr:(NSMutableArray<ZQItemModel *> *)arr;
+///獲取選中後的所有標題
+- (NSString *)getSeltedAllTitleStr;
 @end
 
 NS_ASSUME_NONNULL_END

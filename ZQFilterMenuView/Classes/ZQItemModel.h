@@ -11,7 +11,7 @@
 @interface ZQItemModel : NSObject
 /// plist文件中的key
 @property (nonatomic, strong) NSString *plistKey;
-/// 选择模式，0 单选 1 复选    ///// 子數據中 2 是復合選項
+/// 选择模式，0 单选 1 复选    ///// 子數據中 2 是復合選項  3 不限和其他类型不能共存特殊处理
 @property (nonatomic, assign) NSInteger selectMode;
 @property (nonatomic, copy) NSString *displayText;// 筛选条上显示的文字
 @property (nonatomic, copy) NSString *currentID;// 当前筛选条的id;
@@ -23,11 +23,14 @@
 //在数据源里的下标
 @property (nonatomic, strong) NSIndexPath *indexPath;
 //父子项
-@property (nonatomic, weak) ZQItemModel *faterModel;
+@property (nonatomic, weak) ZQItemModel *fatherModel;
 @property (nonatomic, strong) NSMutableArray<ZQItemModel*> *selectSonDataModels;//存放选中的子数据源
 
 ///是否选中不限
 - (BOOL)isShowUnlimited;
+/// 递归获取祖父model
+- (ZQItemModel *)getGrandFatherModel;
+/// 初始化
 + (instancetype)modelWithText:(NSString *)text currentID:(NSString *)currentID isSelect:(BOOL)select;
 
 

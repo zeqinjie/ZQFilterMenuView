@@ -51,16 +51,6 @@
     }];
 }
 
-- (void)setMenuFontSize:(CGFloat)menuFontSize{
-    _menuFontSize = menuFontSize;
-    self.titleLabel.font = [UIFont systemFontOfSize:self.menuFontSize == 0 ? 14 : self.menuFontSize];
-}
-
-- (void)setMenuAligment:(NSTextAlignment)menuAligment{
-    _menuAligment = menuAligment;
-    self.titleLabel.textAlignment = self.menuAligment;
-}
-
 - (void)setModel:(ZQItemModel *)model{
     _model = model;
     self.titleLabel.text = model.displayText;
@@ -84,7 +74,17 @@
         make.width.mas_equalTo(checkBtnW);
         make.right.mas_equalTo(checkBtnR);
     }];
-    self.titleLabel.textColor = isChoice ? (self.styleColor ? self.styleColor :[UIColor colorWithHexString:@"ff8000"]) : [UIColor colorWithHexString:@"222222"];
+    self.titleLabel.textColor = isChoice ? self.config.menuCellTitleSelectedColor : self.config.menuCellTitleNormalColor;
+}
+
+- (void)setConfig:(ZQFilterMenuControlConfig *)config {
+    _config = config;
+    
+    self.titleLabel.font = config.menuCellFont;
+    self.titleLabel.textColor = config.menuCellTitleNormalColor;
+    self.titleLabel.textAlignment = config.menuCellAligment;
+    [self.checkButton setImage:config.menuCellIndicatorNormalImg forState:UIControlStateNormal];
+    [self.checkButton setImage:config.menuCellIndicatorSelectedImg forState:UIControlStateSelected];
 }
 
 

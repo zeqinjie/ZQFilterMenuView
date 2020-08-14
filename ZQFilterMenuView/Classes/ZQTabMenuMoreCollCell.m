@@ -8,6 +8,7 @@
 #import "ZQTabMenuMoreCollCell.h"
 #import <ZQFoundationKit/UIColor+Util.h>
 #import <Masonry/Masonry.h>
+#import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuMoreCollCell()
 
 @end
@@ -42,13 +43,13 @@
 #pragma mark - Private Method
 - (void)didSelectColor:(BOOL)isDidSelect{
     if (isDidSelect) {
-        self.contentView.backgroundColor = self.didSelectBgColor ? self.didSelectBgColor : [UIColor colorWithHexString:@"faf5f2"];
-        self.titleLabel.textColor = (self.styleColor ? self.styleColor : [UIColor colorWithHexString:@"ff8000"]);
-        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:(self.styleColor ? self.styleColor : [UIColor colorWithHexString:@"ff8000"])];
+        self.contentView.backgroundColor = self.config.moreCellSelectedBgColor;
+        self.titleLabel.textColor = self.config.moreCellTitleSelectedColor;
+        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:self.config.moreCellSelectedBorderColor];
     }else{
-        self.contentView.backgroundColor = self.didUnSelectBgColor ? self.didUnSelectBgColor : [UIColor colorWithHexString:@"f5f5f5"];
-        self.titleLabel.textColor = [UIColor colorWithHexString:@"222222"];
-        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:[UIColor colorWithHexString:@"f5f5f5"]];
+        self.contentView.backgroundColor = self.config.moreCellNormalBgColor;
+        self.titleLabel.textColor = self.config.moreCellTitleNormalColor;
+        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:self.config.moreCellNormalBorderColor];
     }
 }
 

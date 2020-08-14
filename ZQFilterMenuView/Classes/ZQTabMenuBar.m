@@ -11,6 +11,8 @@
 #import "ZQTabMenuView.h"
 #import "ZQSeperateLine.h"
 #import "ZQFliterModelHeader.h"
+#import <ZQFoundationKit/UIColor+Util.h>
+
 @interface ZQTabMenuBar () <ZQTabMenuViewDelegate>
 
 @property (nonatomic, assign) CGRect orginFrame;
@@ -22,7 +24,6 @@
 //当前展示menu
 @property (nonatomic, weak) ZQTabMenuView *showMenuView;
 
-@property (nonatomic, strong) UIColor *styleColor;
 @end
 
 
@@ -52,19 +53,9 @@
     
 }
 
-- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
-{
-    if (self = [self initWithTabControls:tabControls styleColor:nil]) {
-        ////
-    }
-    return self;
-}
-
-- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
-                         styleColor:(UIColor *)styleColor{
+- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls {
     if (self = [super init]) {
         _tabControls = tabControls;
-        _styleColor = styleColor;
         [self initItems];
     }
     return self;
@@ -83,7 +74,6 @@
         [obj setValue:didDismissTabMenuBar forKeyPath:@"didDismissTabMenuBar"];
         
         ZQTabMenuView *menuView = [[ZQTabMenuView alloc] initWithTabControl:obj];
-        menuView.styleColor = self.styleColor;
         menuView.delegate = weakSelf;
         [weakSelf.menus addObject:menuView];
         
@@ -129,7 +119,7 @@
 
 - (void)reloadMenusIndex:(NSInteger)index{
     ZQTabMenuView *menuView = self.menus[index];
-    [menuView.tabControl adjustTitle:menuView.tabControl.title textColor:menuView.tabControl.titleColor];
+    [menuView.tabControl adjustTitle:menuView.tabControl.title textColor:menuView.tabControl.config.titleNormalColor];
     [menuView reloadSeletedListDataSource];
 }
 
@@ -208,14 +198,5 @@
 - (void)dealloc {
     NSLog(@"%s", __func__);
 }
-
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 
 @end

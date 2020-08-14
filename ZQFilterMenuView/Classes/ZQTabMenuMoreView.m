@@ -14,25 +14,49 @@
 #import <Masonry/Masonry.h>
 #import <ZQFoundationKit/UIColor+Util.h>
 #import "ZQFliterModelHeader.h"
+#import "ZQFilterMenuConfig.h"
+#import "ZQTabMenuPriceView.h"
+#define GAP  20
+
+typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
+    ZQTabMenuMoreBottomShowTypeEnsure, //带重置样式
+    ZQTabMenuMoreBottomShowTypeInput, //带输入框样式
+};
+
 @interface ZQTabMenuMoreView()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 @property (strong, nonatomic) UICollectionView *moreCollectionView;
 
 /// 是否要恢复上次选择
 @property (nonatomic, assign) BOOL isResetStore;
-
-@property (nonatomic, strong) ZQTabMenuEnsureView *ensureView;
-
-@property (nonatomic, strong) ZQTabMenuMoreFilterData *fliterData;
-
+/** 配置对象 */
+@property (nonatomic, strong) ZQFilterMenuMoreViewConfig *moreViewConfig;
+/** ensureView配置对象 */
+@property (nonatomic, strong) ZQFilterMenuEnsureViewConfig *ensureViewConfig;
+/** 输入框配置对象 */
+@property (nonatomic, strong) ZQFilterMenuRangeViewConfig *inputViewConfig;
+/** 显示内容样式类型 */
+@property (nonatomic, assign) ZQTabMenuMoreBottomShowType type;
 @end
 
 @implementation ZQTabMenuMoreView
-#define GAP  20
-- (instancetype)initWithFrame:(CGRect)frame{
-    self = [super initWithFrame:frame];
-    if (self) {
-         [self creatUI];
+
+- (instancetype)initWithMoreViewConfig:(ZQFilterMenuMoreViewConfig *)moreViewConfig
+                      ensureViewConfig:(ZQFilterMenuEnsureViewConfig *)ensureViewConfig {
+    if (self = [super initWithFrame:CGRectZero]) {
+        self.moreViewConfig = moreViewConfig;
+        self.ensureViewConfig = ensureViewConfig;
+        [self creatUI:ZQTabMenuMoreBottomShowTypeEnsure];
     }
+    return self;
+}
+
+- (instancetype)initWithMoreViewConfig:(ZQFilterMenuMoreViewConfig *)moreViewConfig
+                       rangeViewConfig:(ZQFilterMenuRangeViewConfig *)rangeViewConfig {
+    if (self = [super initWithFrame:CGRectZero]) {
+           self.moreViewConfig = moreViewConfig;
+           self.inputViewConfig = rangeViewConfig;
+        [self creatUI:ZQTabMenuMoreBottomShowTypeInput];
+       }
     return self;
 }
 
@@ -43,31 +67,53 @@
     return _fliterData;
 }
 
-- (void)creatUI{
+- (void)creatUI:(ZQTabMenuMoreBottomShowType)type {
+    self.type = type;
     self.backgroundColor = [UIColor whiteColor];
     ZQWS(weakSelf);
     CGFloat bottomViewH = 73;
-    self.ensureView = [[ZQTabMenuEnsureView alloc]initWithFrame:CGRectZero];
-    [self addSubview:self.ensureView];
-    [self.ensureView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.equalTo(self);
-        make.height.mas_equalTo(bottomViewH);
-    }];
-    self.ensureView.clickAction = ^(NSInteger tag) {
-        if (tag == 1) { // 重置
-            [weakSelf retSetAction];
-        }else{ // 确定
+    UIView *view = nil;
+    if (type == ZQTabMenuMoreBottomShowTypeEnsure) {
+        self.ensureView = [[ZQTabMenuEnsureView alloc]initWithConfig:self.ensureViewConfig];
+        [self addSubview:self.ensureView];
+        view = self.ensureView;
+        self.ensureView.clickAction = ^(NSInteger tag) {
+            if (tag == 1) { // 重置
+                [weakSelf retSetAction];
+            }else{ // 确定
+                [weakSelf ensureAction];
+            }
+        };
+    } else if (type == ZQTabMenuMoreBottomShowTypeInput) {
+        self.inputView = [[ZQTabMenuPriceView alloc]initWithConfig:self.inputViewConfig];
+        [self addSubview:self.inputView];
+        self.inputView.inputValueBlock = ^(NSInteger tag, NSString *title, NSDictionary *idDic) {
+            if(weakSelf.inputSelectBlock) {
+                weakSelf.inputSelectBlock(weakSelf,weakSelf.tag,title,idDic);
+            }
+        };
+        self.inputView.incompatibleBlock = ^{
             [weakSelf ensureAction];
-        }
-    };
-    
+        };
+        self.inputView.startEditBlock = ^{
+            [weakSelf resetSeletedAction];
+        };
+        view = self.inputView;
+    }
+    if (view) {
+        [view mas_makeConstraints:^(MASConstraintMaker *make) {
+              make.left.bottom.right.equalTo(self);
+              make.height.mas_equalTo(bottomViewH);
+        }];
+    }
+   
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
     flowLayout.minimumInteritemSpacing = GAP;
     flowLayout.minimumLineSpacing = 15;
     flowLayout.sectionInset = UIEdgeInsetsMake(0, GAP, GAP, GAP);
     _moreCollectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     _moreCollectionView.showsHorizontalScrollIndicator = NO;
-    _moreCollectionView.backgroundColor = [UIColor whiteColor];
+    _moreCollectionView.backgroundColor = self.moreViewConfig.backgroundColor;
     _moreCollectionView.delegate = self;
     _moreCollectionView.dataSource = self;
     _moreCollectionView.scrollEnabled = YES;
@@ -76,7 +122,11 @@
     [_moreCollectionView registerClass:[ZQTabMenuMoreColHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"ZQTabMenuMoreColHeaderView"];
     [self addSubview:_moreCollectionView];
     [_moreCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(self.ensureView.mas_top);
+        if (view) {
+            make.bottom.equalTo(view.mas_top);
+        } else {
+            make.bottom.equalTo(self.mas_bottom);
+        }
         make.left.right.top.equalTo(self);
     }];
 }
@@ -92,11 +142,6 @@
 - (void)resetChoiceReload{
     [self.fliterData resetChoiceReloadDataSource:self.ListDataSource];
     [self.moreCollectionView reloadData];
-}
-
-- (void)setStyleColor:(UIColor *)styleColor {
-    _styleColor = styleColor;
-    self.ensureView.styleColor = styleColor;
 }
 
 #pragma mark - Public Method
@@ -118,7 +163,8 @@
     [self.fliterData setLastSelectedDataSource:self.ListDataSource];
     [self setTabControlTitle];
     if (self.selectBlock) {
-        self.selectBlock(self,self.fliterData.lastMoreSeletedDic,self.fliterData.moreSeletedDic);
+        self.selectBlock(self,self.fliterData.lastMoreSeletedDic,self.fliterData.moreSeletedDic,[self.fliterData getSeltedAllTitleStr]);
+
     }
 }
 
@@ -126,6 +172,29 @@
 /// 设置选中状态
 - (void)setTabControlTitle{
     [self.tabControl setControlTitleStatus:[self.fliterData isHadSelected] title:self.tabControl.title selTitle:self.tabControl.title];
+}
+
+//输入框样式重置输入内容
+- (void)resetInputAction {
+    if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isSeltedRestInput) {
+        [self.inputView resetInputText];
+    }
+}
+
+//输入框样式重置选中内容
+- (void)resetSeletedAction {
+     if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isInputRestSelted) {
+         [self.fliterData removeAllSelectData];
+         [self.moreCollectionView reloadData];
+     }
+}
+
+//是否存在选中数据
+- (BOOL)isSelectedItemData {
+    if(self.fliterData.moreSeletedDic.count > 0) {
+        return YES;
+    }
+    return NO;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -141,9 +210,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     ZQTabMenuMoreCollCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ZQTabMenuMoreCollCell" forIndexPath:indexPath];
-    cell.styleColor = self.styleColor;
-    cell.didSelectBgColor = self.didSelectBgColor;
-    cell.didUnSelectBgColor = self.didUnSelectBgColor;
+    cell.config = self.moreViewConfig;
     ZQItemModel *itemModel = self.ListDataSource[indexPath.section];
     ZQItemModel *model = itemModel.dataSource[indexPath.row];
     NSMutableArray *arr = self.fliterData.moreSeletedDic[ZQNullClass(itemModel.currentID)];
@@ -169,6 +236,16 @@
     }else { //复选
         [self.fliterData selectModel:model arr:arr];
     }
+    
+    if (itemModel.selectMode == 3) { // 不限和其他数据特殊处理 (选中不限移除其他,选中其他,移除不限)
+        if ([model isShowUnlimited]) {
+            [self.fliterData removeAllSelectData];
+            arr = [NSMutableArray arrayWithObject:model];
+        } else {
+            [self.fliterData removeUnlimitedModelWithArr:arr];
+        }
+    }
+    [self resetInputAction];
     [self.fliterData.moreSeletedDic setObject:arr forKey:ZQNullClass(itemModel.currentID)];
     [self.moreCollectionView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]];
 }
@@ -179,6 +256,7 @@
         ZQTabMenuMoreColHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"ZQTabMenuMoreColHeaderView" forIndexPath:indexPath];
         ZQItemModel *model = self.ListDataSource[indexPath.section];
         headerView.titleLabel.text = model.displayText;
+        headerView.config = self.moreViewConfig;
         reusableview = headerView;
     }
     return reusableview;
@@ -193,7 +271,7 @@
 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-    return CGSizeMake(ZQScreenWidth, 60);
+    return CGSizeMake(ZQScreenWidth, self.moreViewConfig.sectionHeaderHegiht);
 }
 
 @end

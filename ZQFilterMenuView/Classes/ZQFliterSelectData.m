@@ -264,10 +264,11 @@
         if (childSelectData.selectModelDic.count) {
             ZQItemModel *selectModel = [childSelectData getFirstSelectModel];
             if (childSelectData.selectModelDic.count > 1) {//多选
-                return kMutitTitle;
+                ZQItemModel *grandfather = [selectModel getGrandFatherModel];
+                return [NSString stringWithFormat:@"%@(%lu)",grandfather.displayText,(unsigned long)childSelectData.selectModelDic.count];
             }else{
                 if ([selectModel isShowUnlimited]) {
-                    return selectModel.faterModel.displayText;
+                    return selectModel.fatherModel.displayText;
                 }else{
                     return selectModel.displayText;
                 }

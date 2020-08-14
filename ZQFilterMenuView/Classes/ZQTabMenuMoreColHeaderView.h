@@ -6,8 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
+@class ZQFilterMenuMoreViewConfig;
 
 @interface ZQTabMenuMoreColHeaderView : UICollectionReusableView
 @property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) ZQFilterMenuMoreViewConfig *config;
 @end
 

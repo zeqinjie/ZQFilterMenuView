@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ZQFilterMenuConfig.h"
 
 @class ZQTabControl, ZQTabMenuBar;
 
@@ -27,9 +28,15 @@
 @property (nonatomic, weak) id<ZQTabMenuBarDelegate>delegate;
 @property (nonatomic, assign) BOOL isShowBottomLine;
 @property (nonatomic, assign) CGFloat menuTopOffsetY; //菜单弹出距离顶部偏移量
+//- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls;
+//- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
+//                         styleColor:(UIColor *)styleColor;
+//- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
+//                         styleColor:(UIColor *)styleColor
+//                         menuNorImg:(UIImage *)menuNorImg
+//                         menuSelImg:(UIImage *)menuSelImg;
 - (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls;
-- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
-                         styleColor:(UIColor *)styleColor;
+
 
 //去掉当前展示的menu的所有选择项
 - (void)clearShowMenuAllSelected;

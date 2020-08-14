@@ -109,4 +109,33 @@
         [arr addObject:model];
     }
 }
+
+///移除不限对象
+- (void)removeUnlimitedModelWithArr:(NSMutableArray<ZQItemModel *> *)arr {
+    NSMutableArray *removeArr = [NSMutableArray array];
+    for (ZQItemModel *model in [arr objectEnumerator]) {
+        if ([model isShowUnlimited]) {
+            [removeArr addObject:model];
+        }
+    }
+    if (removeArr.count) {
+        [arr removeObjectsInArray:removeArr];
+    }
+}
+
+///獲取選中後的所有標題
+- (NSString *)getSeltedAllTitleStr {
+    __block NSString *str = @"";
+    [self.moreSeletedDic enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSMutableArray<ZQItemModel *> * _Nonnull obj, BOOL * _Nonnull stop) {
+        [obj enumerateObjectsUsingBlock:^(ZQItemModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+            if(idx == 0) {
+                str = [NSString stringWithFormat:@"%@",model.displayText];
+            } else {
+                str = [NSString stringWithFormat:@"%@ %@",str,model.displayText];
+            }
+        }];
+    }];
+    return str;
+}
+
 @end

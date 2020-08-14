@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <ZQFoundationKit/UIColor+Util.h>
 #import "ZQFliterModelHeader.h"
+#import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuPriceView()<UITextFieldDelegate>
 
 @property (nonatomic,strong) UITextField *minTextField;
@@ -18,38 +19,35 @@
 @property (nonatomic,strong) UIButton *confirmButton;
 @property (strong, nonatomic) UILabel *unitLabel;//單位
 @property (nonatomic, strong) ZQSeperateLine *topLine;
+@property (nonatomic, strong) ZQFilterMenuRangeViewConfig *config;
 @end
 
 @implementation ZQTabMenuPriceView
 
-- (instancetype)initWithFrame:(CGRect)frame{
-    self = [super initWithFrame:frame];
-    if (self) {
-         [self creatUI];
+- (instancetype)initWithConfig:(ZQFilterMenuRangeViewConfig *)config {
+    if (self = [super initWithFrame:CGRectZero]) {
+        self.config = config;
+        [self creatUI];
     }
     return self;
 }
 
 - (ZQSeperateLine *)topLine {
     if (!_topLine) {
-        _topLine = [[ZQSeperateLine alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 0.5)];
+        _topLine = [[ZQSeperateLine alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.config.topLineHeight)];
+        _topLine.backgroundColor = self.config.topLineColor;
     }
     return _topLine;
 }
 
-- (void)setUnitStr:(NSString *)unitStr{
-    _unitStr = unitStr;
-    self.unitLabel.text = unitStr;
-}
-
 - (void)creatUI{
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = self.config.backgroundColor;
     CGFloat textFieldW = 87;
     CGFloat textFieldH = 36;
     CGFloat gap = 20;
     CGFloat linegap = 4;
     
-    self.minTextField = [self getTextFieldHolder:@"最低價" tag:1];
+    self.minTextField = [self getTextFieldHolder:self.config.minValueTitle tag:1];
     [self addSubview:self.minTextField];
     [self.minTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(gap);
@@ -59,7 +57,7 @@
     }];
     
     UIView *line = [[UIView alloc]initWithFrame:CGRectZero];
-    line.backgroundColor = [UIColor colorWithHexString:@"979797"];
+    line.backgroundColor = self.config.rangeLineColor;
     [self addSubview:line];
     [line mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.minTextField.mas_right).offset(linegap);
@@ -68,7 +66,7 @@
         make.centerY.equalTo(self.minTextField);
     }];
     
-    self.maxTextField = [self getTextFieldHolder:@"最高價" tag:2];
+    self.maxTextField = [self getTextFieldHolder:self.config.maxValueTitle tag:2];
     [self addSubview:self.maxTextField];
     [self.maxTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(line.mas_right).offset(linegap);
@@ -76,24 +74,23 @@
     }];
     
     self.unitLabel = [[UILabel alloc]init];
-    self.unitLabel.text = @"元";
-    self.unitLabel.textColor = [UIColor colorWithHexString:@"666666"];
+    self.unitLabel.text = self.config.unitLabelTitle;
+    self.unitLabel.textColor = self.config.unitLabelColor;
     self.unitLabel.numberOfLines = 1;
     self.unitLabel.textAlignment = NSTextAlignmentCenter;
-    self.unitLabel.font = [UIFont systemFontOfSize:16];
+    self.unitLabel.font = self.config.unitLabelFont;
     [self addSubview:self.unitLabel];
     [self.unitLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.maxTextField.mas_right).offset(linegap);
         make.centerY.height.equalTo(self.minTextField);
-        make.width.equalTo(@16);
     }];
     
     self.confirmButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.confirmButton setTitle:@"確定" forState:UIControlStateNormal];
-    self.confirmButton.titleLabel.font = [UIFont systemFontOfSize:16];
-    [self.confirmButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.confirmButton setTitle:self.config.confirmBtnTitle forState:UIControlStateNormal];
+    self.confirmButton.titleLabel.font = self.config.confirmBtnFont;
+    [self.confirmButton setTitleColor:self.config.confirmBtnTitleColor forState:UIControlStateNormal];
     [self.confirmButton addTarget:self action:@selector(confirmButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    self.confirmButton.backgroundColor = [UIColor colorWithHexString:@"ff8000"];
+    self.confirmButton.backgroundColor = self.config.confirmBtnBgColor;
     self.confirmButton.clipsToBounds = YES;
     self.confirmButton.layer.cornerRadius = 2;
     
@@ -107,31 +104,27 @@
 }
 
 #pragma mark - Getter && Setter
-- (void)setStyleColor:(UIColor *)styleColor{
-    _styleColor = styleColor;
-    self.confirmButton.backgroundColor = styleColor;
-}
-
 - (UITextField *)getTextFieldHolder:(NSString *)placeHolder tag:(NSInteger)tag{
     UITextField *textField = [[UITextField alloc]init];
-    textField.font = [UIFont systemFontOfSize:15];
+    textField.font = self.config.rangeTextFieldFont;
     textField.returnKeyType = UIReturnKeyDone;
     textField.keyboardType = UIKeyboardTypeDecimalPad;
     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     textField.delegate = self;
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.alignment = NSTextAlignmentCenter;
-    textField.textColor = [UIColor colorWithHexString:@"222222"];
+    textField.textColor = self.config.rangeTextFieldColor;
     textField.placeholder = placeHolder;
     if(placeHolder){
-        textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeHolder
-                                                                          attributes:@{NSForegroundColorAttributeName:[UIColor colorWithHexString:@"cccccc"],
-                                                                                       NSFontAttributeName:[UIFont systemFontOfSize:15],
-                                                                                       NSParagraphStyleAttributeName:style}];
+        textField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeHolder attributes:@{
+            NSForegroundColorAttributeName:self.config.rangeTextFieldPlaceholderColor,
+            NSFontAttributeName:self.config.rangeTextFieldFont,
+            NSParagraphStyleAttributeName:style
+        }];
     }
     textField.clipsToBounds = YES;
-    textField.layer.borderWidth = 1;
-    textField.layer.borderColor = [UIColor colorWithHexString:@"e6e6e6"].CGColor;
+    textField.layer.borderWidth = self.config.rangeTextFieldBorderWidth;
+    textField.layer.borderColor = self.config.rangeTextFieldBorderColor.CGColor;
     textField.tag = tag;
     textField.textAlignment = NSTextAlignmentCenter;
     return textField;
@@ -174,6 +167,12 @@
     }
 }
 
+///重置输入内容
+- (void)resetInputText {
+    self.minTextField.text = @"";
+    self.maxTextField.text = @"";
+}
+
 #pragma mark - Private
 - (NSDictionary *)getInputIdDic{
     NSString *mix = ZQNullClass(self.minTextField.text);
@@ -192,12 +191,13 @@
 - (NSString *)getInputTitle{
     NSString *mix = self.minTextField.text;
     NSString *max = self.maxTextField.text;
+    NSString *unitStr = self.config.unitLabelTitle;
     if (mix.length && max.length) {
-        return [NSString stringWithFormat:@"%@-%@%@",mix,max,self.unitStr];
+        return [NSString stringWithFormat:@"%@-%@%@",mix,max,unitStr];
     }else if (mix.length) {
-        return [NSString stringWithFormat:@"%@%@以上",mix,self.unitStr];
+        return [NSString stringWithFormat:@"%@%@以上",mix,unitStr];
     }else if (max.length) {
-        return [NSString stringWithFormat:@"%@%@以下",max,self.unitStr];
+        return [NSString stringWithFormat:@"%@%@以下",max,unitStr];
     }else{
         return nil;
     }
@@ -222,11 +222,22 @@
                 self.inputValueBlock(self.tag, [self getInputTitle],[self getInputIdDic]);
             }
         }
+    } else {
+        if (self.incompatibleBlock) {
+            self.incompatibleBlock();
+        }
     }
 }
 
 
 #pragma mark - UITextFieldDelegate
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    if(self.startEditBlock) {
+        self.startEditBlock();
+    }
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;

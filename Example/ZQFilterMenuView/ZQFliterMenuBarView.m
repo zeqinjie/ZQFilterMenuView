@@ -31,6 +31,8 @@
 @property (strong, nonatomic) ZQTabMenuPriceView *priceInputView;
 /// 控制按钮
 @property (strong, nonatomic) NSMutableArray<ZQTabControl *> *controlBars;
+/** ensureView 的配置 */
+@property (nonatomic, strong) ZQFilterMenuEnsureViewConfig *ensureViewConfig;
 
 @end
 @implementation ZQFliterMenuBarView
@@ -50,6 +52,23 @@
         _controlBars = [NSMutableArray array];
     }
     return _controlBars;;
+}
+
+- (ZQFilterMenuEnsureViewConfig *)ensureViewConfig {
+    if (!_ensureViewConfig) {
+        ZQFilterMenuEnsureViewConfig *ensureConfig = [ZQFilterMenuEnsureViewConfig new];
+        ensureConfig.backgroundColor = [UIColor blueColor];
+        ensureConfig.resetBtnTitle = @"重置";
+        ensureConfig.resetBtnFont = [UIFont systemFontOfSize:20];
+        ensureConfig.resetBtnTitleColor = [UIColor redColor];
+        ensureConfig.resetBtnBgColor = [UIColor yellowColor];
+        ensureConfig.confirmBtnTitle = @"确定";
+        ensureConfig.confirmBtnFont = [UIFont systemFontOfSize:20];
+        ensureConfig.confirmBtnTitleColor = [UIColor greenColor];
+        ensureConfig.confirmBtnBgColor = [UIColor orangeColor];
+        _ensureViewConfig = ensureConfig;
+    }
+    return _ensureViewConfig;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
@@ -82,10 +101,21 @@
 
 - (void)creatMoreView{
     CGFloat moreViewH = (SCREEN_HEIGHT - 54) * 0.5;
-    self.moreView = [[ZQTabMenuMoreView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, moreViewH)];
+    ZQFilterMenuMoreViewConfig *moreConfig = [ZQFilterMenuMoreViewConfig new];
+    moreConfig.backgroundColor = [UIColor greenColor];
+    moreConfig.moreSectionHeaderTitleColor = [UIColor orangeColor];
+    moreConfig.moreCellTitleNormalColor = [UIColor blueColor];
+    moreConfig.moreCellNormalBgColor = [UIColor yellowColor];
+    moreConfig.moreCellNormalBorderColor = [UIColor redColor];
+    moreConfig.moreCellTitleSelectedColor = [UIColor whiteColor];
+    moreConfig.moreCellSelectedBgColor = [UIColor orangeColor];
+    moreConfig.moreCellSelectedBorderColor = [UIColor blueColor];
+
+    self.moreView = [[ZQTabMenuMoreView alloc] initWithMoreViewConfig:moreConfig ensureViewConfig:self.ensureViewConfig];
+    self.moreView.frame = CGRectMake(0, 0, SCREEN_WIDTH, moreViewH);
     self.moreView.tag = 3;
     self.moreView.ListDataSource = self.viewModel.moreDataSource;
-    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic) {
+    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic, NSString *selectTitles) {
         NSLog(@"更多多选 selectDic : %@ moreSeletedDic : %@",selectDic,moreSeletedDic);
     };
 }
@@ -127,17 +157,38 @@
     [self.controlBars addObject:self.moreControl];
     
     //加入
-    self.tabMenuBar = [[ZQTabMenuBar alloc]initWithTabControls:self.controlBars];
+    self.tabMenuBar = [[ZQTabMenuBar alloc] initWithTabControls:self.controlBars];
+    
     self.tabMenuBar.frame = self.bounds;
-    self.tabMenuBar.backgroundColor = [UIColor whiteColor];
+    self.tabMenuBar.backgroundColor = [UIColor systemPinkColor];
     self.tabMenuBar.delegate = self;
     [self addSubview:self.tabMenuBar];
     
 }
 
 - (void)creatInputPriceView{
-    self.priceInputView = [[ZQTabMenuPriceView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 71)];
-    self.priceInputView.unitStr = @"万";
+    ZQFilterMenuRangeViewConfig *config = [ZQFilterMenuRangeViewConfig new];
+    config.backgroundColor = [UIColor darkGrayColor];
+    config.topLineColor = [UIColor redColor];
+    config.minValueTitle = @"最小值";
+    config.maxValueTitle = @"最大值";
+    config.rangeTextFieldFont = [UIFont systemFontOfSize:20];
+    config.rangeTextFieldColor = [UIColor redColor];
+    config.rangeTextFieldPlaceholderColor = [UIColor whiteColor];
+    config.rangeTextFieldBorderWidth = 5;
+    config.rangeTextFieldBorderColor = [UIColor yellowColor];
+    config.rangeLineColor = [UIColor greenColor];
+    config.unitLabelTitle = @"万";
+    config.unitLabelColor = [UIColor blueColor];
+    config.unitLabelFont = [UIFont systemFontOfSize:20];
+    config.confirmBtnTitle = @"确定";
+    config.confirmBtnTitleColor = [UIColor systemPinkColor];
+    config.confirmBtnBgColor = [UIColor yellowColor];
+    config.confirmBtnFont = [UIFont systemFontOfSize:20];
+    
+    self.priceInputView = [[ZQTabMenuPriceView alloc] initWithConfig:config];
+    self.priceInputView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 71);
+    
     self.priceInputView.inputValueBlock = ^(NSInteger tag, NSString *title, NSDictionary *idDic) {
         NSLog(@"确定选中 idDic = %@",idDic);
     };
@@ -149,14 +200,33 @@
                    controlType:(TabControlType)controlType
              controlCustomView:(UIView *)controlCustomView
                       aligment:(NSTextAlignment)aligment{
-    ZQTabControl *tabControl = [ZQTabControl tabControlWithTitle:controlTitle type:controlType];
-    tabControl.menuAligment = aligment;
-    tabControl.menuTitleLength = 4;
-    tabControl.menuFontSize = 15;
-    tabControl.fontSize = 15;
-    tabControl.menuViewHeigthRatio = 0.5;
+    ZQFilterMenuControlConfig *config = [ZQFilterMenuControlConfig new];
+    config.type = controlType; // 类型
+    config.titleLength = 5; // 标题字数限制
+    config.title = controlTitle; // 标题
+    config.titleFont = [UIFont systemFontOfSize:18]; // 字体大小
+    config.titleNormalColor = [UIColor whiteColor]; // 字体颜色
+    config.titleSelectedColor = [UIColor darkGrayColor]; // 选中后的字体颜色
+    
+    config.menuViewHeigthRatio = 0.5; // 展示高度系数
+    config.menuViewLargthHeight = 400; // 最大高度
+    config.menuViewTableViewSeparatorColor = [UIColor whiteColor];
+    config.menuViewTableViewBgColors = @[
+        [UIColor redColor],
+        [UIColor darkGrayColor],
+        [UIColor purpleColor]
+    ];
+    
+    config.menuCellAligment = aligment;
+    config.menuCellFont = [UIFont systemFontOfSize:15]; // 字体大小
+    config.menuCellTitleNormalColor = [UIColor orangeColor]; // 字体颜色
+    config.menuCellTitleSelectedColor = [UIColor greenColor]; // 选中后的字体颜色
+    if (TabControlTypeMutiple == controlType) {
+        config.ensureViewConfig = self.ensureViewConfig;
+    }
+    
+    ZQTabControl *tabControl = [ZQTabControl tabControlWithConfig:config];
     tabControl.tag = tag;
-    tabControl.menuLargthHeigth = 400;
     tabControl.didSelectedMenuAllData = ^(ZQTabControl *tabControl, NSInteger flag, ZQFliterSelectData *selectData, ZQItemModel *selectModel) {
         NSLog(@"确定选中 selectData = %@",selectData);
     };

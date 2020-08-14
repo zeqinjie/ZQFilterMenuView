@@ -1,6 +1,6 @@
 PODS:
   - Masonry (1.1.0)
-  - ZQFilterMenuView (0.1.0):
+  - ZQFilterMenuView (0.1.2):
     - Masonry
     - ZQFoundationKit
   - ZQFoundationKit (0.1.0):
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  ZQFilterMenuView: de7bbca1c9bd58da235c33434a99ff65fb52a968
+  ZQFilterMenuView: 82f5a7f34d54603b7a2c6a93f7a8974c88b6bbc6
   ZQFoundationKit: a007fa531d35830661b3cf3dae2d7a9282a409e5
 
 PODFILE CHECKSUM: d0b0f6bec7176db54e8f8c41cf5e7a28ef796120
