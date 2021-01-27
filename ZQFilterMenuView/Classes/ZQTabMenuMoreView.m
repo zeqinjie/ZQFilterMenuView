@@ -247,7 +247,8 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     }
     [self resetInputAction];
     [self.fliterData.moreSeletedDic setObject:arr forKey:ZQNullClass(itemModel.currentID)];
-    [self.moreCollectionView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]];
+//    [self.moreCollectionView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]];
+    [self.moreCollectionView reloadData];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
