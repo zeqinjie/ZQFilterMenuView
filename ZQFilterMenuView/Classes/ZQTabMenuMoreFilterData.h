@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///移除不限对象
 - (void)removeUnlimitedModelWithArr:(NSMutableArray<ZQItemModel *> *)arr;
 ///獲取選中後的所有標題
-- (NSString *)getSeltedAllTitleStr;
+- (NSDictionary *)getSeltedAllTitleDic;
 @end
 
 NS_ASSUME_NONNULL_END

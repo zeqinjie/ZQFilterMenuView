@@ -12,7 +12,6 @@
 #import "ZQSeperateLine.h"
 #import "ZQFliterModelHeader.h"
 #import <ZQFoundationKit/UIColor+Util.h>
-
 @interface ZQTabMenuBar () <ZQTabMenuViewDelegate>
 
 @property (nonatomic, assign) CGRect orginFrame;
@@ -23,6 +22,8 @@
 @property (nonatomic, weak) ZQTabControl *currentTab;
 //当前展示menu
 @property (nonatomic, weak) ZQTabMenuView *showMenuView;
+/** 配置对象 */
+@property (nonatomic, strong, readwrite) ZQFilterMenuBarConfig *config;
 
 @end
 
@@ -38,25 +39,34 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
-    CGFloat width = self.frame.size.width/self.tabControls.count;
+    __block CGFloat width = (self.frame.size.width - self.config.lrGap * 2 )/self.tabControls.count;
+    __block CGFloat x = self.config.lrGap;
     [self.tabControls enumerateObjectsUsingBlock:^(ZQTabControl * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (self.config.widthArr && self.config.widthArr.count > idx) {
+            width = [self.config.widthArr[idx] floatValue];
+        }
         ZQTabControl *tabControl = obj;
-        tabControl.frame = CGRectMake(idx * width, 0, width, self.frame.size.height);
+        tabControl.frame = CGRectMake(x, 0, width, self.frame.size.height);
+        x += width;
         [tabControl adjustFrame];
     }];
     if (!self.orginFrame.size.width) {
         self.orginFrame = self.frame;
     }
     self.showFilterFrame = CGRectMake(0, self.frame.origin.y, [UIScreen mainScreen].bounds.size.width, self.frame.size.height);
-    self.bottomLine.frame = CGRectMake(0, self.frame.size.height - 0.6, self.frame.size.width, 0.6);
-    
+    CGFloat lineHeight = self.config.bottomLineHeight;
+    self.bottomLine.frame = CGRectMake(0, self.frame.size.height - lineHeight, self.frame.size.width, lineHeight);
 }
 
-- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls {
+- (instancetype)initWithTabControls:(NSArray<ZQTabControl *>*)tabControls
+                             config:(ZQFilterMenuBarConfig *)config {
     if (self = [super init]) {
         _tabControls = tabControls;
+        _config = config;
         [self initItems];
+        self.bottomLine.hidden = !config.isShowBottomLine;
+        self.bottomLine.backgroundColor = config.bottomLineColor;
+        self.backgroundColor = config.backgroundColor;
     }
     return self;
 }
@@ -173,11 +183,6 @@
         return [self.delegate tabMenuViewToSuperview];
     }
     return nil;
-}
-#pragma mark - Public Method
-- (void)setIsShowBottomLine:(BOOL)isShowBottomLine{
-    _isShowBottomLine = isShowBottomLine;
-    self.bottomLine.hidden = !isShowBottomLine;
 }
 
 #pragma mark - 懒加载

@@ -88,6 +88,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取当前选择的参数
 - (NSDictionary *)getSelectParameDic;
 
+///獲取選中後的所有標題
+- (NSDictionary *)getSeltedAllTitleDic;
+
 #pragma mark - Child Method
 
 /// 是否选中数据

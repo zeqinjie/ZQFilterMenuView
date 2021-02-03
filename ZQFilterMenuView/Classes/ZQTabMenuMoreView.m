@@ -89,10 +89,15 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
         [self addSubview:self.inputView];
         self.inputView.inputValueBlock = ^(NSInteger tag, NSString *title, NSDictionary *idDic) {
             if(weakSelf.inputSelectBlock) {
+                weakSelf.isCustomizeEnter = YES;
+                [weakSelf.fliterData.lastMoreSeletedDic removeAllObjects];
                 weakSelf.inputSelectBlock(weakSelf,weakSelf.tag,title,idDic);
             }
         };
         self.inputView.incompatibleBlock = ^{
+            weakSelf.isCustomizeEnter = NO;
+            [weakSelf.inputView resetInputText];
+            [weakSelf.inputView validlastTextRestoreOrClear:NO];
             [weakSelf ensureAction];
         };
         self.inputView.startEditBlock = ^{
@@ -146,11 +151,27 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - Public Method
 - (void)tabMenuViewWillAppear{
-    [self resetChoiceReload];
+    if (self.type == ZQTabMenuMoreBottomShowTypeInput) {
+        if (self.isCustomizeEnter) { //有自定义输入
+            [self.inputView validlastTextRestoreOrClear:YES];
+        } else {
+            [self resetChoiceReload];
+        }
+    } else {
+        [self resetChoiceReload];
+    }
 }
 
 - (void)tabMenuViewWillDisappear{
-    
+    if (self.type == ZQTabMenuMoreBottomShowTypeInput) {
+        if (self.isCustomizeEnter) { //有自定义输入
+            [self.fliterData.lastMoreSeletedDic removeAllObjects];
+            [self retSetAction];
+        } else {
+            [self.inputView resetInputText];
+            [self.inputView validlastTextRestoreOrClear:NO];
+        }
+    }
 }
 
 #pragma mark - Action Method
@@ -163,8 +184,9 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     [self.fliterData setLastSelectedDataSource:self.ListDataSource];
     [self setTabControlTitle];
     if (self.selectBlock) {
-        self.selectBlock(self,self.fliterData.lastMoreSeletedDic,self.fliterData.moreSeletedDic,[self.fliterData getSeltedAllTitleStr]);
-
+        NSString *str = [self.fliterData getSeltedAllTitleDic][@"title"];
+        NSDictionary *dic = [self.fliterData getSeltedAllTitleDic][@"dic"];
+        self.selectBlock(self,self.fliterData.lastMoreSeletedDic,self.fliterData.moreSeletedDic,str,dic);
     }
 }
 
@@ -266,7 +288,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     CGSize size;
-    size = CGSizeMake((ZQScreenWidth - GAP * 4)/3, 34);
+    size = CGSizeMake((ZQScreenWidth - GAP * 4)/3, self.moreViewConfig.cellItemHeight);
     return size;
 }
 

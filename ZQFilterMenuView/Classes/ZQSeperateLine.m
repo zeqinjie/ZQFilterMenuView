@@ -22,19 +22,5 @@
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder{
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        //ios6需要延迟加载
-        [self performSelector:@selector(reset) withObject:nil afterDelay:0.2];
-    }
-    return self;
-}
-
-- (void)reset{
-    [self setBackgroundColor:[UIColor colorWithHexString:@"dadada"]];
-    [self setBounds:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 0.5)];
-}
-
 
 @end

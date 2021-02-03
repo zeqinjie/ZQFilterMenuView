@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ZQItemModel.h"
+#import "ZQFilterMenuConfig.h"
 @class ZQTabControl, ZQTabMenuView;
 
 @protocol ZQTabMenuViewDelegate <NSObject>
@@ -27,8 +28,6 @@
 
 @property (nonatomic, weak) id<ZQTabMenuViewDelegate>delegate;
 
-@property (nonatomic, strong) UIColor *styleColor;
-
 - (instancetype)initWithTabControl:(ZQTabControl *)tabControl;
 
 /// 菜单添加到父视图
@@ -36,16 +35,19 @@
 /// @param offsetY 额外偏移量
 - (void)displayTabMenuViewWithMenuBar:(UIView *)menuBar withTopOffsetY:(CGFloat)offsetY;
 
+/**
+ 重置数据
+
+ @param dataSource 数据源
+ @param row -1值不做选中
+ */
+//- (void)resetOldSelectWithDataSource:(NSArray *)dataSource selectRow:(NSInteger)row;
 
 ///重置所有选择项，包括子对象数组
 - (void)resetAllSelectData;
 
-
-/// 刷新数据
 - (void)reloadAllList;
 
-
-/// 隐藏
 - (void)dismiss;
 
 //刷新选中数据UI

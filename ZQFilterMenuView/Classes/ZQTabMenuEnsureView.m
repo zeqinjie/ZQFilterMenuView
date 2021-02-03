@@ -9,7 +9,6 @@
 #import "ZQSeperateLine.h"
 #import "ZQFliterModelHeader.h"
 #import <ZQFoundationKit/UIColor+Util.h>
-
 #import <Masonry/Masonry.h>
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuEnsureView()
@@ -89,6 +88,7 @@
     CGFloat width = (ZQScreenWidth - GAP * 2)/2;
     CGFloat heigth = 47;
     CGFloat y = (self.frame.size.height - heigth)/2;
+    self.backgroundColor = self.config.backgroundColor;
     //確定按鈕
     UIButton *confirmBtn = [self creatButtonTitle:self.config.confirmBtnTitle
                                             color:self.config.confirmBtnTitleColor

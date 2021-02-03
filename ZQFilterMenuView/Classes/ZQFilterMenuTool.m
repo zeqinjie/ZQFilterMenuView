@@ -7,7 +7,7 @@
 
 #import "ZQFilterMenuTool.h"
 
-@implementation NSBundle (TWHouseUIKitTool)
+@implementation NSBundle (ZQFilterMenuTool)
 + (instancetype)ZQFilterMenuToolBundle {
     static NSBundle *refreshBundle = nil;
     if (refreshBundle == nil) {

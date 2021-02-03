@@ -115,7 +115,7 @@
     self.moreView.frame = CGRectMake(0, 0, SCREEN_WIDTH, moreViewH);
     self.moreView.tag = 3;
     self.moreView.ListDataSource = self.viewModel.moreDataSource;
-    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic, NSString *selectTitles) {
+    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic, NSString *selectTitles, NSDictionary *selectDicTitles) {
         NSLog(@"更多多选 selectDic : %@ moreSeletedDic : %@",selectDic,moreSeletedDic);
     };
 }
@@ -157,7 +157,8 @@
     [self.controlBars addObject:self.moreControl];
     
     //加入
-    self.tabMenuBar = [[ZQTabMenuBar alloc] initWithTabControls:self.controlBars];
+    ZQFilterMenuBarConfig *menuBarConfig = [[ZQFilterMenuBarConfig alloc] init];
+    self.tabMenuBar = [[ZQTabMenuBar alloc] initWithTabControls:self.controlBars config:menuBarConfig];
     
     self.tabMenuBar.frame = self.bounds;
     self.tabMenuBar.backgroundColor = [UIColor systemPinkColor];

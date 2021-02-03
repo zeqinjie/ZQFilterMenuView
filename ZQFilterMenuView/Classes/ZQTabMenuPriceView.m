@@ -42,8 +42,6 @@
 
 - (void)creatUI{
     self.backgroundColor = self.config.backgroundColor;
-    CGFloat textFieldW = 87;
-    CGFloat textFieldH = 36;
     CGFloat gap = 20;
     CGFloat linegap = 4;
     
@@ -52,8 +50,8 @@
     [self.minTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(gap);
         make.centerY.equalTo(self);
-        make.height.mas_equalTo(textFieldH);
-        make.width.mas_equalTo(textFieldW);
+        make.height.mas_equalTo(self.config.textFieldHeight);
+        make.width.mas_equalTo(self.config.textFieldWidth);
     }];
     
     UIView *line = [[UIView alloc]initWithFrame:CGRectZero];
@@ -97,7 +95,9 @@
     [self addSubview:self.confirmButton];
     [self.confirmButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-gap);
-        make.height.width.centerY.mas_equalTo(self.minTextField);
+        make.centerY.mas_equalTo(self.minTextField);
+        make.height.mas_equalTo(self.config.confirmButtonHeight);
+        make.width.mas_equalTo(self.config.confirmButtonWidth);
     }];
     
     [self addSubview:self.topLine];
@@ -173,6 +173,17 @@
     self.maxTextField.text = @"";
 }
 
+//恢复或者清空最后一次输入的有效值
+- (void)validlastTextRestoreOrClear:(BOOL)isRestore {
+    if (isRestore) {
+        self.minTextField.text = self.lastValidMinText;
+        self.maxTextField.text = self.lastValidMaxText;
+    } else {
+        self.lastValidMinText = @"";
+        self.lastValidMaxText = @"";
+    }
+}
+
 #pragma mark - Private
 - (NSDictionary *)getInputIdDic{
     NSString *mix = ZQNullClass(self.minTextField.text);
@@ -219,6 +230,8 @@
         if (self.inputValueBlock) {
             if ([self getInputTitle]) {
                 [self.tabControl setControlTitle:[self getInputTitle]];
+                self.lastValidMaxText = self.maxTextField.text;
+                self.lastValidMinText = self.minTextField.text;
                 self.inputValueBlock(self.tag, [self getInputTitle],[self getInputIdDic]);
             }
         }
@@ -229,6 +242,12 @@
     }
 }
 
+#pragma mark - Override Method
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    self.minTextField.layer.borderColor = self.config.rangeTextFieldBorderColor.CGColor;
+    self.maxTextField.layer.borderColor = self.config.rangeTextFieldBorderColor.CGColor;
+}
 
 #pragma mark - UITextFieldDelegate
 

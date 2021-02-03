@@ -297,6 +297,25 @@
     return dic;
 }
 
+///獲取選中後的所有標題
+- (NSDictionary *)getSeltedAllTitleDic {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    for (NSInteger i = 0; i < kMAXCount; i++) {
+        ZQFliterSelectData *childSelectData = self.dict[@(i)];
+        if (childSelectData.selectModelDic.allValues.count) {
+            NSString *idKey = @"";
+            NSMutableArray *idKeyArr = [NSMutableArray array];
+            for (ZQItemModel *model in childSelectData.selectModelDic.allValues) {
+                idKey = ZQNullClass(model.plistKey);
+                [idKeyArr addObject:ZQNullClass(model.displayText)];
+            }
+            NSString *idStr = [idKeyArr componentsJoinedByString:@","];
+            [dic setObject:idStr forKey:idKey];
+        }
+    }
+    return dic;
+}
+
 #pragma mark - Child Method
 /// 获取第一个选中数据
 - (ZQItemModel *)getFirstSelectModel{

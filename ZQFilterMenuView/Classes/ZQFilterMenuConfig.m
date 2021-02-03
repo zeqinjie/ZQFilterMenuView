@@ -9,6 +9,21 @@
 #import "ZQFilterMenuTool.h"
 #import <ZQFoundationKit/UIColor+Util.h>
 
+#pragma mark - ZQFilterMenuBarConfig
+@implementation ZQFilterMenuBarConfig
+
+- (instancetype)init {
+    if (self = [super init]) {
+        // 初始化配置
+        self.backgroundColor = [UIColor whiteColor];
+        self.bottomLineColor = [UIColor colorWithHexString:@"f5f5f5"];
+        self.isShowBottomLine = YES;
+        self.bottomLineHeight = 0.6;
+    }
+    return self;
+}
+
+@end
 
 #pragma mark - ZQFilterMenuControlConfig
 @implementation ZQFilterMenuControlConfig
@@ -64,6 +79,7 @@
         self.moreCellSelectedBgColor = [UIColor colorWithHexString:@"faf5f2"];
         self.moreCellSelectedBorderColor = [UIColor colorWithHexString:@"ff8000"];
         self.sectionHeaderHegiht = 60;
+        self.cellItemHeight = 34;
     }
     return self;
 }
@@ -118,6 +134,10 @@
         self.confirmBtnTitleColor = [UIColor whiteColor];
         self.confirmBtnBgColor = [UIColor colorWithHexString:@"ff8000"];
         self.confirmBtnFont = [UIFont systemFontOfSize:16];
+        self.textFieldHeight = 36;
+        self.textFieldWidth =  87;
+        self.confirmButtonHeight = 36;
+        self.confirmButtonWidth = 87;
     }
     return self;
 }

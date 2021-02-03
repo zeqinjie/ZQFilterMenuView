@@ -124,18 +124,23 @@
 }
 
 ///獲取選中後的所有標題
-- (NSString *)getSeltedAllTitleStr {
-    __block NSString *str = @"";
+- (NSDictionary *)getSeltedAllTitleDic {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    __block NSString *tempStr = @"";
     [self.moreSeletedDic enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSMutableArray<ZQItemModel *> * _Nonnull obj, BOOL * _Nonnull stop) {
+        __block NSString *str = @"";
         [obj enumerateObjectsUsingBlock:^(ZQItemModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
             if(idx == 0) {
                 str = [NSString stringWithFormat:@"%@",model.displayText];
+                tempStr = str;
             } else {
-                str = [NSString stringWithFormat:@"%@ %@",str,model.displayText];
+                str = [NSString stringWithFormat:@"%@,%@",str,model.displayText];
+                tempStr = [NSString stringWithFormat:@"%@ %@",tempStr,model.displayText];
             }
         }];
+        [dic setValue:str forKey:key];
     }];
-    return str;
+    return @{@"title": tempStr, @"dic": dic};
 }
 
 @end

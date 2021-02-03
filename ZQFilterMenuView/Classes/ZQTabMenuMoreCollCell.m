@@ -75,4 +75,10 @@
     view.layer.borderColor = borderColor.CGColor;
 }
 
+#pragma mark - Override Method
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    [self didSelectColor:self.isChoice];
+}
+
 @end

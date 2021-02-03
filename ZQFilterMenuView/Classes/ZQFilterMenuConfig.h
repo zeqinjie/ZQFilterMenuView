@@ -11,6 +11,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - ZQFilterMenuBarConfig
+@interface ZQFilterMenuBarConfig : NSObject
+
+/** 背景色 （默认：白色）*/
+@property (nonatomic, strong) UIColor *backgroundColor;
+/** 底部分割线的颜色 （默认：f5f5f5）*/
+@property (nonatomic, strong) UIColor *bottomLineColor;
+/** 是否显示底部分割线 （默认：YES）*/
+@property (nonatomic, assign) BOOL isShowBottomLine;
+/** 底部分割线的高度（默认：0.6） */
+@property (nonatomic, assign) CGFloat bottomLineHeight;
+/** 获取对应的宽度，如果是 nil 则为平均宽 */
+@property (nonatomic, strong) NSArray<NSNumber *> *widthArr;
+/** 左右间隙 默认 0*/
+@property (nonatomic, assign) CGFloat lrGap;
+@end
+
 #pragma mark - ZQFilterMenuControlConfig
 @interface ZQFilterMenuControlConfig : NSObject
 
@@ -98,6 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isSeltedRestInput;
 /** 输入内容重置item选中 (默认不重置) */
 @property (nonatomic, assign) BOOL isInputRestSelted;
+/** moreCell 的高度(默认: 34) */
+@property (nonatomic, assign) CGFloat cellItemHeight;
 
 @end
 
@@ -168,7 +187,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIColor *confirmBtnBgColor;
 /** 确定按钮字体（默认：16） */
 @property (nonatomic, strong) UIFont *confirmBtnFont;
-
+/** 输入文本高度（默认：36） */
+@property (nonatomic, assign) CGFloat textFieldHeight;
+/** 输入文本宽度（默认：87） */
+@property (nonatomic, assign) CGFloat textFieldWidth;
+/** 确定按钮高度（默认：36） */
+@property (nonatomic, assign) CGFloat confirmButtonHeight;
+/** 确定按钮宽度（默认：87） */
+@property (nonatomic, assign) CGFloat confirmButtonWidth;
 
 @end
 

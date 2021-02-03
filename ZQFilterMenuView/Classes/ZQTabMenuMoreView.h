@@ -15,7 +15,7 @@
 @class ZQFilterMenuRangeViewConfig;
 @class ZQTabMenuPriceView;
 @interface ZQTabMenuMoreView : UIView
-@property (nonatomic, copy) void (^selectBlock)(ZQTabMenuMoreView *view,NSMutableDictionary *selectDic,NSMutableDictionary *moreSeletedDic,NSString *selectTitles);
+@property (nonatomic, copy) void (^selectBlock)(ZQTabMenuMoreView *view,NSMutableDictionary *selectDic,NSMutableDictionary *moreSeletedDic,NSString *selectTitles,NSDictionary *selectDicTitles);
 
 //输入框选中
 @property (nonatomic, copy) void (^inputSelectBlock)(ZQTabMenuMoreView *view,NSInteger tag, NSString *title, NSDictionary *idDic);
@@ -28,6 +28,8 @@
 @property (nonatomic, strong) ZQTabMenuPriceView *inputView;
 // 筛选数据
 @property (nonatomic, strong) ZQTabMenuMoreFilterData *fliterData;
+/** 是否是自定义输入 */
+@property (nonatomic, assign) BOOL isCustomizeEnter;
 - (void)tabMenuViewWillAppear;
 - (void)tabMenuViewWillDisappear;
 /// 设置选中状态

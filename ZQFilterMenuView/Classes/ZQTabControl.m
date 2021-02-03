@@ -9,6 +9,7 @@
 #import "ZQTabControl.h"
 #import "ZQTabMenuBar.h"
 #import <ZQFoundationKit/UIColor+Util.h>
+#import "ZQFilterMenuTool.h"
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabControl ()
 
@@ -79,6 +80,14 @@
     }else{
         [super setTitle:title forState:state];
     }
+}
+
+- (void)setTitleColor:(UIColor *)color forState:(UIControlState)state {
+    // 解决微软的暗黑模式适配库对标题颜色的影响
+    if (UIControlStateNormal != state) {
+        return;
+    }
+    [super setTitleColor:color forState:state];
 }
 
 - (void)setSelected:(BOOL)selected{
