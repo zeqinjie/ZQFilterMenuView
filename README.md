@@ -50,6 +50,12 @@ it, simply add the following line to your Podfile:
 pod 'ZQFilterMenuView'
 ```
 
+## Release Notes
+- v0.1.1: demo 展示
+- v0.1.2: 新增 config 样式配置对象
+- v0.1.3: 修复闪现bug
+- v0.1.1: 设置间距大小，补充 config 样式参数
+
 ## Author
 
 zhengzeqin, zhengzeqin@addcn.com
