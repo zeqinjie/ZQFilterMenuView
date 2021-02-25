@@ -114,9 +114,9 @@
     self.moreView = [[ZQTabMenuMoreView alloc] initWithMoreViewConfig:moreConfig ensureViewConfig:self.ensureViewConfig];
     self.moreView.frame = CGRectMake(0, 0, SCREEN_WIDTH, moreViewH);
     self.moreView.tag = 3;
-    self.moreView.ListDataSource = self.viewModel.moreDataSource;
-    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, NSMutableDictionary *selectDic, NSMutableDictionary *moreSeletedDic, NSString *selectTitles, NSDictionary *selectDicTitles) {
-        NSLog(@"更多多选 selectDic : %@ moreSeletedDic : %@",selectDic,moreSeletedDic);
+    self.moreView.listDataSource = self.viewModel.moreDataSource;
+    self.moreView.selectBlock = ^(ZQTabMenuMoreView *view, ZQTabMenuMoreFilterData *selectData) {
+        NSLog(@"更多多选 selectDic : %@ moreSeletedDic : %@",selectData.lastMoreSeletedDic,selectData.moreSeletedDic);
     };
 }
 
@@ -124,10 +124,10 @@
     // 区域
     self.locationControl = [self creatControl:@"区域"
                                           tag:0
-                                  controlType:TabControlTypeMutiple
+                                  controlType:TabControlTypeMultiple
                             controlCustomView:nil
                                      aligment:NSTextAlignmentLeft];
-    self.locationControl.ListDataSource = self.viewModel.locationDataSource;
+    self.locationControl.listDataSource = self.viewModel.locationDataSource;
     [self.controlBars addObject:self.locationControl];
     
     // 类型
@@ -136,7 +136,7 @@
                               controlType:TabControlTypeDefault
                         controlCustomView:nil
                                  aligment:NSTextAlignmentCenter];
-    self.typeControl.ListDataSource = self.viewModel.typeDataSource;
+    self.typeControl.listDataSource = self.viewModel.typeDataSource;
     [self.controlBars addObject:self.typeControl];
     
     // 类型
@@ -145,7 +145,7 @@
                               controlType:TabControlTypeDefault
                         controlCustomView:nil
                                  aligment:NSTextAlignmentCenter];
-    self.priceControl.ListDataSource = self.viewModel.priceDataSource;
+    self.priceControl.listDataSource = self.viewModel.priceDataSource;
     [self.controlBars addObject:self.priceControl];
     
     // 更多
@@ -222,7 +222,7 @@
     config.menuCellFont = [UIFont systemFontOfSize:15]; // 字体大小
     config.menuCellTitleNormalColor = [UIColor orangeColor]; // 字体颜色
     config.menuCellTitleSelectedColor = [UIColor greenColor]; // 选中后的字体颜色
-    if (TabControlTypeMutiple == controlType) {
+    if (TabControlTypeMultiple == controlType) {
         config.ensureViewConfig = self.ensureViewConfig;
     }
     

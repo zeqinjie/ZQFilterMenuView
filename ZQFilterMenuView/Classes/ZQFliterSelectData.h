@@ -91,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///獲取選中後的所有標題
 - (NSDictionary *)getSeltedAllTitleDic;
 
+///字符串返回部分默认分隔符 separator 是, 号
+- (NSDictionary *)getSeltedAllTitleDicSeparator:(NSString *_Nullable)separator;
 #pragma mark - Child Method
 
 /// 是否选中数据

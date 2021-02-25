@@ -137,15 +137,15 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 }
 
 #pragma mark - Setter
-- (void)setListDataSource:(NSArray<ZQItemModel *> *)ListDataSource{
-    _ListDataSource = ListDataSource;
-    [self.fliterData setListDataSource:ListDataSource];
+- (void)setListDataSource:(NSArray<ZQItemModel *> *)listDataSource{
+    _listDataSource = listDataSource;
+    [self.fliterData setListDataSource:listDataSource];
     [self setTabControlTitle];
     [self.moreCollectionView reloadData];
 }
 
 - (void)resetChoiceReload{
-    [self.fliterData resetChoiceReloadDataSource:self.ListDataSource];
+    [self.fliterData resetChoiceReloadDataSource:self.listDataSource];
     [self.moreCollectionView reloadData];
 }
 
@@ -181,12 +181,12 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 }
 
 - (void)ensureAction{
-    [self.fliterData setLastSelectedDataSource:self.ListDataSource];
+    [self.fliterData setLastSelectedDataSource:self.listDataSource];
     [self setTabControlTitle];
     if (self.selectBlock) {
-        NSString *str = [self.fliterData getSeltedAllTitleDic][@"title"];
-        NSDictionary *dic = [self.fliterData getSeltedAllTitleDic][@"dic"];
-        self.selectBlock(self,self.fliterData.lastMoreSeletedDic,self.fliterData.moreSeletedDic,str,dic);
+//        NSString *str = [self.fliterData getSeltedAllTitleDic][@"title"];
+//        NSDictionary *dic = [self.fliterData getSeltedAllTitleDic][@"dic"];
+        self.selectBlock(self,self.fliterData);
     }
 }
 
@@ -198,14 +198,14 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 //输入框样式重置输入内容
 - (void)resetInputAction {
-    if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isSeltedRestInput) {
+    if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isSelectedResetInput) {
         [self.inputView resetInputText];
     }
 }
 
 //输入框样式重置选中内容
 - (void)resetSeletedAction {
-     if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isInputRestSelted) {
+     if (self.type == ZQTabMenuMoreBottomShowTypeInput && self.moreViewConfig.isInputResetSelected) {
          [self.fliterData removeAllSelectData];
          [self.moreCollectionView reloadData];
      }
@@ -221,11 +221,11 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    return self.ListDataSource.count;
+    return self.listDataSource.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    ZQItemModel *model = self.ListDataSource[section];
+    ZQItemModel *model = self.listDataSource[section];
     NSArray *models = model.dataSource;
     return models.count;
 }
@@ -233,7 +233,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     ZQTabMenuMoreCollCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ZQTabMenuMoreCollCell" forIndexPath:indexPath];
     cell.config = self.moreViewConfig;
-    ZQItemModel *itemModel = self.ListDataSource[indexPath.section];
+    ZQItemModel *itemModel = self.listDataSource[indexPath.section];
     ZQItemModel *model = itemModel.dataSource[indexPath.row];
     NSMutableArray *arr = self.fliterData.moreSeletedDic[ZQNullClass(itemModel.currentID)];
     cell.titleLabel.text = model.displayText;
@@ -247,11 +247,11 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    ZQItemModel *itemModel = self.ListDataSource[indexPath.section];
+    ZQItemModel *itemModel = self.listDataSource[indexPath.section];
     ZQItemModel *model = itemModel.dataSource[indexPath.row];
     NSMutableArray *arr = self.fliterData.moreSeletedDic[ZQNullClass(itemModel.currentID)];
-    if (itemModel.selectMode == 0) {// 单选
-        if (model.selectMode != 1) {
+    if (itemModel.selectMode == ZQItemModelSelectModeSingle) {// 单选
+        if (model.selectMode != ZQItemModelSelectModeMultiple) {
             [self.fliterData removeAllExtenFixModel:arr selectModel:model];
         }
         [self.fliterData selectModel:model arr:arr];
@@ -259,7 +259,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
         [self.fliterData selectModel:model arr:arr];
     }
     
-    if (itemModel.selectMode == 3) { // 不限和其他数据特殊处理 (选中不限移除其他,选中其他,移除不限)
+    if (itemModel.selectMode == ZQItemModelSelectModeUnlimit) { // 不限和其他数据特殊处理 (选中不限移除其他,选中其他,移除不限)
         if ([model isShowUnlimited]) {
             [self.fliterData removeAllSelectData];
             arr = [NSMutableArray arrayWithObject:model];
@@ -277,7 +277,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     ZQTabMenuMoreColHeaderView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader){
         ZQTabMenuMoreColHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"ZQTabMenuMoreColHeaderView" forIndexPath:indexPath];
-        ZQItemModel *model = self.ListDataSource[indexPath.section];
+        ZQItemModel *model = self.listDataSource[indexPath.section];
         headerView.titleLabel.text = model.displayText;
         headerView.config = self.moreViewConfig;
         reusableview = headerView;

@@ -2,7 +2,7 @@
 //  ZQFilterMenuConfig.m
 //  TWHouseUIKit
 //
-//  Created by zhengzeqin on 2020/7/30.
+//  Created by linxunfeng on 2020/7/30.
 //
 
 #import "ZQFilterMenuConfig.h"

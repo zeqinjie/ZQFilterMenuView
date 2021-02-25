@@ -11,6 +11,13 @@
 #import <objc/runtime.h>
 @implementation ZQItemModel
 
+- (instancetype)init{
+    if (self = [super init]) {
+        self.unlimited = @"0"; // 默认为 0
+    }
+    return self;
+}
+
 + (instancetype)modelWithText:(NSString *)text currentID:(NSString *)currentID isSelect:(BOOL)select {
     ZQItemModel *model = [[ZQItemModel alloc] init];
     model.displayText = text;
@@ -34,7 +41,7 @@
 }
 
 - (BOOL)isShowUnlimited{
-    if ([self.currentID isEqualToString:@"0"]) {
+    if ([self.currentID isEqualToString:self.unlimited]) {
         return YES;
     }
     return NO;

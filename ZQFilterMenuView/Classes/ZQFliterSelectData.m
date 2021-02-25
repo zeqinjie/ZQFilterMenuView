@@ -299,6 +299,14 @@
 
 ///獲取選中後的所有標題
 - (NSDictionary *)getSeltedAllTitleDic {
+    return [self getSeltedAllTitleDicSeparator:nil];
+}
+
+///字符串返回部分默认分隔符 separator 是, 号
+- (NSDictionary *)getSeltedAllTitleDicSeparator:(NSString *_Nullable)separator {
+    if (separator == nil) {
+        separator = @",";
+    }
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     for (NSInteger i = 0; i < kMAXCount; i++) {
         ZQFliterSelectData *childSelectData = self.dict[@(i)];
@@ -309,13 +317,12 @@
                 idKey = ZQNullClass(model.plistKey);
                 [idKeyArr addObject:ZQNullClass(model.displayText)];
             }
-            NSString *idStr = [idKeyArr componentsJoinedByString:@","];
+            NSString *idStr = [idKeyArr componentsJoinedByString:separator];
             [dic setObject:idStr forKey:idKey];
         }
     }
     return dic;
 }
-
 #pragma mark - Child Method
 /// 获取第一个选中数据
 - (ZQItemModel *)getFirstSelectModel{

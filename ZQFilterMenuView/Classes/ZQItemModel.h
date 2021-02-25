@@ -7,25 +7,30 @@
 //
 
 #import <Foundation/Foundation.h>
-
+typedef NS_ENUM(NSInteger ,ZQItemModelSelectMode) {
+    ZQItemModelSelectModeSingle = 0,   // 单选 0
+    ZQItemModelSelectModeMultiple = 1, // 复选 1
+    ZQItemModelSelectModeUnlimit = 3, // 不限和其他类型不能共存特殊处理 3
+};
 @interface ZQItemModel : NSObject
 /// plist文件中的key
 @property (nonatomic, strong) NSString *plistKey;
-/// 选择模式，0 单选 1 复选    ///// 子數據中 2 是復合選項  3 不限和其他类型不能共存特殊处理
-@property (nonatomic, assign) NSInteger selectMode;
+@property (nonatomic, assign) ZQItemModelSelectMode selectMode;
 @property (nonatomic, copy) NSString *displayText;// 筛选条上显示的文字
 @property (nonatomic, copy) NSString *currentID;// 当前筛选条的id;
-@property (nonatomic, assign) BOOL seleceted;// 是否显示选中。
-//存储 ZQItemModel对象
-@property (nonatomic, strong) NSArray<ZQItemModel*> *dataSource;// 多级列表时，存储下一级的数据。
-@property (nonatomic, assign) BOOL isHaveSecondSource;// 是否有下一级的数据
-
+@property (nonatomic, assign) BOOL seleceted;// 是否显示选中
+//存储 ZQItemModel对象, 多级列表时，存储下一级的数据。
+@property (nonatomic, strong) NSArray<ZQItemModel*> *dataSource;
+// 是否有下一级的数据
+@property (nonatomic, assign) BOOL isHaveSecondSource;
 //在数据源里的下标
 @property (nonatomic, strong) NSIndexPath *indexPath;
 //父子项
 @property (nonatomic, weak) ZQItemModel *fatherModel;
-@property (nonatomic, strong) NSMutableArray<ZQItemModel*> *selectSonDataModels;//存放选中的子数据源
-
+//存放选中的子数据源
+@property (nonatomic, strong) NSMutableArray<ZQItemModel*> *selectSonDataModels;
+/// 设置不限 id 默认为 0
+@property (nonatomic, strong) NSString *unlimited;
 ///是否选中不限
 - (BOOL)isShowUnlimited;
 /// 递归获取祖父model

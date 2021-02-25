@@ -10,7 +10,7 @@
 
 typedef NS_ENUM(NSInteger, TabControlType) {
     TabControlTypeDefault = 0,  //默认列表形式
-    TabControlTypeMutiple, //默认列表形式同时底部有个确认view 多选
+    TabControlTypeMultiple, //默认列表形式同时底部有个确认view 多选
     TabControlTypeCustom  //自定义形式
 };
 
@@ -22,7 +22,7 @@ typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
 @property (nonatomic, strong, readonly) ZQFilterMenuControlConfig *config;
 @property (nonatomic, assign, readonly) TabControlType tabControlType;
 @property (nonatomic, copy) ZQTabDisplayCustomWithMenu displayCustomWithMenu;
-@property (nonatomic, strong) NSArray <ZQItemModel *>*ListDataSource;
+@property (nonatomic, strong) NSArray <ZQItemModel *>*listDataSource;
 
 /**
 第几选中的回调

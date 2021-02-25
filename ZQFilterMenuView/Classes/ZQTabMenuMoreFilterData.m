@@ -27,6 +27,13 @@
     return _lastMoreSeletedDic;
 }
 
+- (NSMutableDictionary *)lastMoreSeletedAllDic {
+    if (!_lastMoreSeletedAllDic) {
+        _lastMoreSeletedAllDic = [NSMutableDictionary dictionary];
+    }
+    return _lastMoreSeletedAllDic;
+}
+
 #pragma mark - Public Method
 /// 设置数据源对象
 - (void)setListDataSource:(NSArray<ZQItemModel *> *)listDataSource{
@@ -41,6 +48,7 @@
         }
         [self.moreSeletedDic setObject:seletedArr forKey:ZQNullClass(itemModel.currentID)];
         [self.lastMoreSeletedDic setObject:seletedIdArr forKey:ZQNullClass(itemModel.currentID)];
+        [self.lastMoreSeletedAllDic setObject:seletedIdArr forKey:ZQNullClass(itemModel.currentID)];
     }
 }
 
@@ -70,12 +78,15 @@
     [self.lastMoreSeletedDic removeAllObjects];
     for (ZQItemModel *itemModel in listDataSource) {
         NSMutableArray *arr = self.moreSeletedDic[ZQNullClass(itemModel.currentID)];
-        if (arr.count) {
+        if (arr.count) { //保存选择的
             NSMutableArray *resultArr = [NSMutableArray array];
             for (ZQItemModel *model in arr) {
                 [resultArr addObject:model.currentID];
             }
             [self.lastMoreSeletedDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
+            [self.lastMoreSeletedAllDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
+        } else { // 保存未选择的
+            [self.lastMoreSeletedAllDic setObject:[NSMutableArray array] forKey:ZQNullClass(itemModel.currentID)];
         }
     }
 }
@@ -95,7 +106,7 @@
 /// 移除非複選對象 选中对象不移除
 - (void)removeAllExtenFixModel:(NSMutableArray<ZQItemModel *> *)arr selectModel:(ZQItemModel *)selectModel{
     for (ZQItemModel *model in [arr reverseObjectEnumerator]) {
-        if (model.selectMode != 1 && selectModel != model) {
+        if (model.selectMode != ZQItemModelSelectModeMultiple && selectModel != model) {
             [arr removeObject:model];
         }
     }
@@ -124,9 +135,12 @@
 }
 
 ///獲取選中後的所有標題
-- (NSDictionary *)getSeltedAllTitleDic {
+- (NSDictionary *)getSelectedAllTitleDicSeparator:(NSString *_Nullable)separator {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     __block NSString *tempStr = @"";
+    if (separator == nil) {//默认空格
+        separator = @" ";
+    }
     [self.moreSeletedDic enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSMutableArray<ZQItemModel *> * _Nonnull obj, BOOL * _Nonnull stop) {
         __block NSString *str = @"";
         [obj enumerateObjectsUsingBlock:^(ZQItemModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -134,8 +148,8 @@
                 str = [NSString stringWithFormat:@"%@",model.displayText];
                 tempStr = str;
             } else {
-                str = [NSString stringWithFormat:@"%@,%@",str,model.displayText];
-                tempStr = [NSString stringWithFormat:@"%@ %@",tempStr,model.displayText];
+                str = [NSString stringWithFormat:@"%@%@%@",str,separator,model.displayText];
+                tempStr = [NSString stringWithFormat:@"%@%@%@",tempStr,separator,model.displayText];
             }
         }];
         [dic setValue:str forKey:key];
@@ -143,4 +157,12 @@
     return @{@"title": tempStr, @"dic": dic};
 }
 
+///获取选择的个数
+- (NSInteger)getSelectCount{
+    NSInteger count = 0;
+    for (NSArray *models in self.moreSeletedDic.allValues) {
+        count += models.count;
+    }
+    return count;
+}
 @end

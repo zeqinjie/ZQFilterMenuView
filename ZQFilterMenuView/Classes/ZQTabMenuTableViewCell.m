@@ -61,7 +61,7 @@
     _isChoice = isChoice;
     CGFloat checkBtnW = 0;
     CGFloat checkBtnR = 0;
-    if (self.model.selectMode == 1) { //复选类型
+    if (self.model.selectMode == ZQItemModelSelectModeMultiple) { //复选类型
         self.checkButton.hidden = NO;
         checkBtnW = 15;
         checkBtnR = -20;

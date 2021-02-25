@@ -11,9 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZQTabMenuMoreFilterData : NSObject
 
-@property (strong, nonatomic) NSMutableDictionary<NSString *,NSMutableArray<ZQItemModel *> *> *moreSeletedDic;
-/// 记录上次的选择
-@property (strong, nonatomic) NSMutableDictionary<NSString *,NSMutableArray*> *lastMoreSeletedDic;
+
+/// 所有选择的数据 model
+@property (strong, nonatomic) NSMutableDictionary<NSString *, NSMutableArray<ZQItemModel *> *> *moreSeletedDic;
+/// 记录上次的选择，不包括选择的
+@property (strong, nonatomic) NSMutableDictionary<NSString *, NSMutableArray<NSString *> *> *lastMoreSeletedDic;
+/// 记录上次的选择,包括未选择的
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableArray<NSString *> *> *lastMoreSeletedAllDic;
 /// 设置数据源对象
 - (void)setListDataSource:(NSArray<ZQItemModel *> *)listDataSource;
 /// 恢复上一次选中
@@ -30,8 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)selectModel:(ZQItemModel *)model arr:(NSMutableArray<ZQItemModel *> *)arr;
 ///移除不限对象
 - (void)removeUnlimitedModelWithArr:(NSMutableArray<ZQItemModel *> *)arr;
-///獲取選中後的所有標題
-- (NSDictionary *)getSeltedAllTitleDic;
+///獲取選中後的所有標題, 字符串返回部分默认分隔符 separator 是空格。 含 title && dic
+- (NSDictionary *)getSelectedAllTitleDicSeparator:(NSString *_Nullable)separator;
+///获取选择的个数
+- (NSInteger)getSelectCount;
 @end
 
 NS_ASSUME_NONNULL_END

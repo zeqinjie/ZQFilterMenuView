@@ -130,7 +130,7 @@
         self.contentView.frame = adjustFrame;
         //添加底部view
         if (_menuFooterView == nil) {
-            if(self.tabControl.tabControlType == TabControlTypeMutiple) {
+            if(self.tabControl.tabControlType == TabControlTypeMultiple) {
                 _menuFooterView = self.ensureView;
             }else if ([self.delegate respondsToSelector:@selector(tabMenuViewFooterView:)]) {
                 _menuFooterView = [self.delegate tabMenuViewFooterView:self];
@@ -266,7 +266,7 @@
 
 //多选的确认
 - (void)ensureAction{
-    if (self.tabControl.tabControlType == TabControlTypeMutiple){ ////数据回传 多选确定
+    if (self.tabControl.tabControlType == TabControlTypeMultiple){ ////数据回传 多选确定
         if (self.tabControl.didSelectedMenuAllData) {
             self.tabControl.didSelectedMenuAllData(self.tabControl, 1, self.selectData,nil);
         }
@@ -362,7 +362,7 @@
 - (void)reloadSeletedListDataSource{
     //初始化数据源
     self.selectData = [[ZQFliterSelectData alloc]init];
-    self.listDataSource = self.tabControl.ListDataSource;
+    self.listDataSource = self.tabControl.listDataSource;
     self.selectData.fatherDataSource = self.listDataSource;
     [self.selectData reloadSeletedListDataSource:self.listDataSource selectIndex:-1];
     NSString *selectedTitle = [self.selectData getActionDisplayText];
@@ -432,10 +432,10 @@
         lastDataSource = selectModel.dataSource;
     }
     //單選多選處理
-    if (selectModel.selectMode == 0) { //单选移除当前所有的
+    if (selectModel.selectMode == ZQItemModelSelectModeSingle) { //单选移除当前所有的
         [childData removeAllSelectModelAndAddModel:selectModel row:selectRow];//移除所有数据,加入单选数据
         [self.selectData resetSelectLastModelDataSource:lastDataSource listViewIndex:listViewIndex];
-    }else if(selectModel.selectMode == 1) { //复选 暂时没有子数据源
+    }else if(selectModel.selectMode == ZQItemModelSelectModeMultiple) { //复选 暂时没有子数据源
         ZQItemModel *firstModel = dataSource.firstObject;
         if ([firstModel isShowUnlimited]) { //不限
             [childData removeSelectModel:firstModel];

@@ -54,7 +54,8 @@ pod 'ZQFilterMenuView'
 - v0.1.1: demo 展示
 - v0.1.2: 新增 config 样式配置对象
 - v0.1.3: 修复闪现bug
-- v0.1.1: 设置间距大小，补充 config 样式参数
+- v0.1.4: 设置间距大小，补充 config 样式参数
+- v0.1.5: 重命名部分变量
 
 ## Author
 

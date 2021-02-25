@@ -2,7 +2,7 @@
 //  ZQFilterMenuConfig.h
 //  TWHouseUIKit
 //
-//  Created by zhengzeqin on 2020/7/30.
+//  Created by linxunfeng on 2020/7/30.
 //
 
 #import <Foundation/Foundation.h>
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 类型 */
 @property (nonatomic, assign) TabControlType type;
-/** ensureViewConfig type为TabControlTypeMutiple时会用到 */
+/** ensureViewConfig type为TabControlTypeMultiple时会用到 */
 @property (nonatomic, strong) ZQFilterMenuEnsureViewConfig *ensureViewConfig;
 
 /** =================================== control  =================================== */
@@ -112,9 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** sectionHeader 高度 (默认60) */
 @property (nonatomic, assign) CGFloat sectionHeaderHegiht;
 /** 选中item重置输入框内容 (默认不重置) */
-@property (nonatomic, assign) BOOL isSeltedRestInput;
+@property (nonatomic, assign) BOOL isSelectedResetInput;
 /** 输入内容重置item选中 (默认不重置) */
-@property (nonatomic, assign) BOOL isInputRestSelted;
+@property (nonatomic, assign) BOOL isInputResetSelected;
 /** moreCell 的高度(默认: 34) */
 @property (nonatomic, assign) CGFloat cellItemHeight;
 

@@ -15,5 +15,6 @@
 #import "ZQTabMenuMoreView.h"
 #import "ZQTabMenuEnsureView.h"
 #import "ZQFliterSelectData.h"
+#import "ZQTabMenuMoreFilterData.h"
 
 #endif /* ZQFilterMenuHeader_h */
