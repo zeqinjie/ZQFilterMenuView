@@ -25,7 +25,7 @@
 
 <img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/5.png" width="300" height="650" align="middle"/>
 
-
+<img src="https://github.com/zeqinjie/ZQFilterMenuView/blob/master/assets/6.png" width="300" height="650" align="middle"/>
 
 ## USE
 
