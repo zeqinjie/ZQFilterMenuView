@@ -7,40 +7,32 @@
 
 #import "ZQTabMenuMoreFilterData.h"
 #import "ZQFliterModelHeader.h"
-@interface ZQTabMenuMoreFilterData()
-
-@end
 
 @implementation ZQTabMenuMoreFilterData
 
-- (NSMutableDictionary *)moreSeletedDic{
-    if (!_moreSeletedDic) {
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
         _moreSeletedDic = [NSMutableDictionary dictionary];
-    }
-    return _moreSeletedDic;
-}
-
-- (NSMutableDictionary *)lastMoreSeletedDic{
-    if (!_lastMoreSeletedDic) {
         _lastMoreSeletedDic = [NSMutableDictionary dictionary];
-    }
-    return _lastMoreSeletedDic;
-}
-
-- (NSMutableDictionary *)lastMoreSeletedAllDic {
-    if (!_lastMoreSeletedAllDic) {
         _lastMoreSeletedAllDic = [NSMutableDictionary dictionary];
+        _currentMoreSelectDic = [NSMutableDictionary dictionary];
     }
-    return _lastMoreSeletedAllDic;
+    return self;
 }
 
 #pragma mark - Public Method
 /// 设置数据源对象
 - (void)setListDataSource:(NSArray<ZQItemModel *> *)listDataSource{
+    [self.moreSeletedDic removeAllObjects];
+    [self.lastMoreSeletedDic removeAllObjects];
+    [self.lastMoreSeletedAllDic removeAllObjects];
+    [self.currentMoreSelectDic removeAllObjects];
     for (ZQItemModel *itemModel in listDataSource) {
         NSMutableArray *seletedArr = [NSMutableArray array];
         NSMutableArray *seletedIdArr = [NSMutableArray array];
-        for (ZQItemModel *childModel in itemModel.dataSource) {
+        for (ZQItemModel *childModel in itemModel.showDataSource) {
             if (childModel.seleceted) {
                 [seletedArr addObject:childModel];
                 [seletedIdArr addObject:childModel.currentID];
@@ -58,7 +50,7 @@
         //获取选中数据
         NSMutableArray *seletedModelsArr = self.moreSeletedDic[ZQNullClass(itemModel.currentID)];
         [seletedModelsArr removeAllObjects];
-        for (ZQItemModel *model in itemModel.dataSource) {
+        for (ZQItemModel *model in itemModel.showDataSource) {
             if ([seletedIdArr containsObject:model.currentID]) {
                 [seletedModelsArr addObject:model];
             }
@@ -73,9 +65,47 @@
     }];
 }
 
+/// 重置默认选中内容
+- (void)resetDefaultSelectDataWithDataSource:(NSArray <ZQItemModel*>*)listDataSource {
+    [self removeAllSelectData];
+    for (ZQItemModel *itemModel in listDataSource) {
+        NSMutableArray *selectData = [NSMutableArray array];
+        for (ZQItemModel *model in itemModel.showDataSource) {
+            if (model.isResetDefaultSelect) {
+                [selectData addObject:model];
+            }
+        }
+        if (selectData.count > 0 && itemModel.currentID) {
+            [self.moreSeletedDic setValue:selectData forKey:itemModel.currentID];
+        }
+    }
+}
+
 /// 设置最后选中数据
 - (void)setLastSelectedDataSource:(NSArray <ZQItemModel*>*)listDataSource{
     [self.lastMoreSeletedDic removeAllObjects];
+    for (ZQItemModel *itemModel in listDataSource) {
+        for (ZQItemModel *model in itemModel.showDataSource) {
+            model.seleceted = false;
+        }
+        NSMutableArray *arr = self.moreSeletedDic[ZQNullClass(itemModel.currentID)];
+        if (arr.count) { //保存选择的
+            NSMutableArray *resultArr = [NSMutableArray array];
+            for (ZQItemModel *model in arr) {
+                model.seleceted = YES;
+                [resultArr addObject:model.currentID];
+            }
+            [self.lastMoreSeletedDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
+            [self.lastMoreSeletedAllDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
+        } else { // 保存未选择的
+            [self.lastMoreSeletedAllDic setObject:[NSMutableArray array] forKey:ZQNullClass(itemModel.currentID)];
+        }
+    }
+}
+
+/// 获取当前实时选中内容
+- (void)updateCurrentSelectedDataSource:(NSArray <ZQItemModel*>*)listDataSource {
+    [self.currentMoreSelectDic removeAllObjects];
     for (ZQItemModel *itemModel in listDataSource) {
         NSMutableArray *arr = self.moreSeletedDic[ZQNullClass(itemModel.currentID)];
         if (arr.count) { //保存选择的
@@ -83,10 +113,7 @@
             for (ZQItemModel *model in arr) {
                 [resultArr addObject:model.currentID];
             }
-            [self.lastMoreSeletedDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
-            [self.lastMoreSeletedAllDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
-        } else { // 保存未选择的
-            [self.lastMoreSeletedAllDic setObject:[NSMutableArray array] forKey:ZQNullClass(itemModel.currentID)];
+            [self.currentMoreSelectDic setObject:resultArr forKey:ZQNullClass(itemModel.currentID)];
         }
     }
 }

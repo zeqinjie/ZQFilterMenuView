@@ -16,7 +16,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setBackgroundColor:[UIColor colorWithHexString:@"f5f5f5"]];
+        [self setBackgroundColor:[UIColor colorWithHexString:@"cccccc"]];
         [self setBounds:CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 0.5)];
     }
     return self;

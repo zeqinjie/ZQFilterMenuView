@@ -12,11 +12,9 @@
 #import "ZQTabMenuEnsureView.h"
 #import "ZQTabMenuMoreFilterData.h"
 #import <Masonry/Masonry.h>
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import "ZQFliterModelHeader.h"
 #import "ZQFilterMenuConfig.h"
-#import "ZQTabMenuPriceView.h"
-#define GAP  20
 
 typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     ZQTabMenuMoreBottomShowTypeEnsure, //带重置样式
@@ -36,6 +34,8 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 @property (nonatomic, strong) ZQFilterMenuRangeViewConfig *inputViewConfig;
 /** 显示内容样式类型 */
 @property (nonatomic, assign) ZQTabMenuMoreBottomShowType type;
+/** 剔除隐藏数据后的数据源*/
+@property (nonatomic, strong) NSMutableArray <ZQItemModel *>*showListDataSource;
 @end
 
 @implementation ZQTabMenuMoreView
@@ -67,6 +67,13 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     return _fliterData;
 }
 
+- (NSMutableArray<ZQItemModel *> *)showListDataSource {
+    if (_showListDataSource == nil) {
+        _showListDataSource = [NSMutableArray array];
+    }
+    return _showListDataSource;
+}
+
 - (void)creatUI:(ZQTabMenuMoreBottomShowType)type {
     self.type = type;
     self.backgroundColor = [UIColor whiteColor];
@@ -94,11 +101,16 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
                 weakSelf.inputSelectBlock(weakSelf,weakSelf.tag,title,idDic);
             }
         };
-        self.inputView.incompatibleBlock = ^{
-            weakSelf.isCustomizeEnter = NO;
-            [weakSelf.inputView resetInputText];
-            [weakSelf.inputView validlastTextRestoreOrClear:NO];
-            [weakSelf ensureAction];
+        self.inputView.ensureInputTypeBlock = ^(ZQTabMenuPriceViewInputIncorrectType incorrectType){ /// todo
+            if (incorrectType == ZQTabMenuPriceViewInputIncorrectTypeNoInput) {
+                weakSelf.isCustomizeEnter = NO;
+                [weakSelf.inputView resetInputText];
+                [weakSelf.inputView validlastTextRestoreOrClear:NO];
+                [weakSelf ensureAction];
+            }
+            if (weakSelf.ensureInputTypeBlock) {
+                weakSelf.ensureInputTypeBlock(incorrectType);
+            }
         };
         self.inputView.startEditBlock = ^{
             [weakSelf resetSeletedAction];
@@ -113,10 +125,14 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     }
    
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
-    flowLayout.minimumInteritemSpacing = GAP;
-    flowLayout.minimumLineSpacing = 15;
-    flowLayout.sectionInset = UIEdgeInsetsMake(0, GAP, GAP, GAP);
+    flowLayout.minimumInteritemSpacing = self.moreViewConfig.minimumInteritemSpacing;
+    flowLayout.minimumLineSpacing = self.moreViewConfig.minimumLineSpacing;
+    flowLayout.sectionInset = UIEdgeInsetsMake(self.moreViewConfig.sectionInsetTopSpace, self.moreViewConfig.sectionInsetLeftRightSpace, self.moreViewConfig.sectionInsetBottomSpace, self.moreViewConfig.sectionInsetLeftRightSpace);
     _moreCollectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    if (@available(iOS 11.0, *)) {
+        _moreCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    _moreCollectionView.contentInset = self.moreViewConfig.collectionViewInsets;
     _moreCollectionView.showsHorizontalScrollIndicator = NO;
     _moreCollectionView.backgroundColor = self.moreViewConfig.backgroundColor;
     _moreCollectionView.delegate = self;
@@ -139,13 +155,19 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 #pragma mark - Setter
 - (void)setListDataSource:(NSArray<ZQItemModel *> *)listDataSource{
     _listDataSource = listDataSource;
-    [self.fliterData setListDataSource:listDataSource];
+    [self.showListDataSource removeAllObjects];
+    for (ZQItemModel *model in listDataSource) {
+        if (!model.isHide) {
+            [self.showListDataSource addObject:model];
+        }
+    }
+    [self.fliterData setListDataSource:self.showListDataSource];
     [self setTabControlTitle];
     [self.moreCollectionView reloadData];
 }
 
 - (void)resetChoiceReload{
-    [self.fliterData resetChoiceReloadDataSource:self.listDataSource];
+    [self.fliterData resetChoiceReloadDataSource:self.showListDataSource];
     [self.moreCollectionView reloadData];
 }
 
@@ -159,6 +181,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
         }
     } else {
         [self resetChoiceReload];
+        [self.ensureView resetBtnState];
     }
 }
 
@@ -176,12 +199,16 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - Action Method
 - (void)retSetAction{
-    [self.fliterData removeAllSelectData];
+    [self.fliterData resetDefaultSelectDataWithDataSource:self.showListDataSource];
+    if (self.getCurrentSelectingBlock) { // 获取实时选中项的数据回调
+        [self.fliterData updateCurrentSelectedDataSource:self.showListDataSource];
+        self.getCurrentSelectingBlock(self, NO, nil, self.fliterData);
+    }
     [self.moreCollectionView reloadData];
 }
 
 - (void)ensureAction{
-    [self.fliterData setLastSelectedDataSource:self.listDataSource];
+    [self.fliterData setLastSelectedDataSource:self.showListDataSource];
     [self setTabControlTitle];
     if (self.selectBlock) {
 //        NSString *str = [self.fliterData getSeltedAllTitleDic][@"title"];
@@ -191,6 +218,7 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 }
 
 #pragma mark - Private Method
+
 /// 设置选中状态
 - (void)setTabControlTitle{
     [self.tabControl setControlTitleStatus:[self.fliterData isHadSelected] title:self.tabControl.title selTitle:self.tabControl.title];
@@ -221,20 +249,20 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    return self.listDataSource.count;
+    return self.showListDataSource.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    ZQItemModel *model = self.listDataSource[section];
-    NSArray *models = model.dataSource;
+    ZQItemModel *model = self.showListDataSource[section];
+    NSArray *models = model.showDataSource;
     return models.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     ZQTabMenuMoreCollCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"ZQTabMenuMoreCollCell" forIndexPath:indexPath];
     cell.config = self.moreViewConfig;
-    ZQItemModel *itemModel = self.listDataSource[indexPath.section];
-    ZQItemModel *model = itemModel.dataSource[indexPath.row];
+    ZQItemModel *itemModel = self.showListDataSource[indexPath.section];
+    ZQItemModel *model = itemModel.showDataSource[indexPath.row];
     NSMutableArray *arr = self.fliterData.moreSeletedDic[ZQNullClass(itemModel.currentID)];
     cell.titleLabel.text = model.displayText;
     if ([arr containsObject:model]) {
@@ -247,8 +275,8 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 
 #pragma mark - UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    ZQItemModel *itemModel = self.listDataSource[indexPath.section];
-    ZQItemModel *model = itemModel.dataSource[indexPath.row];
+    ZQItemModel *itemModel = self.showListDataSource[indexPath.section];
+    ZQItemModel *model = itemModel.showDataSource[indexPath.row];
     NSMutableArray *arr = self.fliterData.moreSeletedDic[ZQNullClass(itemModel.currentID)];
     if (itemModel.selectMode == ZQItemModelSelectModeSingle) {// 单选
         if (model.selectMode != ZQItemModelSelectModeMultiple) {
@@ -271,13 +299,18 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
     [self.fliterData.moreSeletedDic setObject:arr forKey:ZQNullClass(itemModel.currentID)];
 //    [self.moreCollectionView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]];
     [self.moreCollectionView reloadData];
+    if (self.getCurrentSelectingBlock) { // 选中/取消选中cell 回调
+        [self.fliterData updateCurrentSelectedDataSource:self.showListDataSource];
+        BOOL isSelect = [arr containsObject:model];
+        self.getCurrentSelectingBlock(self, isSelect, model, self.fliterData);
+    }
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
     ZQTabMenuMoreColHeaderView *reusableview = nil;
     if (kind == UICollectionElementKindSectionHeader){
         ZQTabMenuMoreColHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"ZQTabMenuMoreColHeaderView" forIndexPath:indexPath];
-        ZQItemModel *model = self.listDataSource[indexPath.section];
+        ZQItemModel *model = self.showListDataSource[indexPath.section];
         headerView.titleLabel.text = model.displayText;
         headerView.config = self.moreViewConfig;
         reusableview = headerView;
@@ -288,13 +321,14 @@ typedef NS_ENUM(NSInteger ,ZQTabMenuMoreBottomShowType) {
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     CGSize size;
-    size = CGSizeMake((ZQScreenWidth - GAP * 4)/3, self.moreViewConfig.cellItemHeight);
+    CGFloat totalCellWidth = self.frame.size.width - self.moreViewConfig.sectionInsetLeftRightSpace * 2 - self.moreViewConfig.minimumInteritemSpacing * (self.moreViewConfig.perLineCellNum-1);
+    size = CGSizeMake((totalCellWidth-1)/self.moreViewConfig.perLineCellNum, self.moreViewConfig.cellItemHeight);
     return size;
 }
 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-    return CGSizeMake(ZQScreenWidth, self.moreViewConfig.sectionHeaderHegiht);
+    return CGSizeMake(self.frame.size.width, self.moreViewConfig.sectionHeaderHegiht);
 }
 
 @end

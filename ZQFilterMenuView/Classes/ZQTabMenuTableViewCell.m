@@ -6,7 +6,7 @@
 //
 
 #import "ZQTabMenuTableViewCell.h"
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import <Masonry/Masonry.h>
 #import "ZQFilterMenuTool.h"
 @interface ZQTabMenuTableViewCell()
@@ -44,11 +44,6 @@
     
     
     [self.contentView addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(@20);
-        make.centerY.height.equalTo(self);
-        make.right.equalTo(self.checkButton.mas_left);
-    }];
 }
 
 - (void)setModel:(ZQItemModel *)model{
@@ -75,6 +70,7 @@
         make.right.mas_equalTo(checkBtnR);
     }];
     self.titleLabel.textColor = isChoice ? self.config.menuCellTitleSelectedColor : self.config.menuCellTitleNormalColor;
+    [self configBackgroundColorWithSelectState:isChoice];
 }
 
 - (void)setConfig:(ZQFilterMenuControlConfig *)config {
@@ -85,6 +81,32 @@
     self.titleLabel.textAlignment = config.menuCellAligment;
     [self.checkButton setImage:config.menuCellIndicatorNormalImg forState:UIControlStateNormal];
     [self.checkButton setImage:config.menuCellIndicatorSelectedImg forState:UIControlStateSelected];
+    
+    UIEdgeInsets titleLabelEdgeInsets = config.menuCellTitleLabelEdgeInsets;
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        make.left.mas_equalTo(titleLabelEdgeInsets.left);
+        make.top.mas_equalTo(titleLabelEdgeInsets.top);
+        make.bottom.mas_equalTo(titleLabelEdgeInsets.bottom);
+        make.right.equalTo(self.checkButton.mas_left).offset(titleLabelEdgeInsets.right);
+    }];
+}
+
+// 根据选中状态修改背景色
+- (void)configBackgroundColorWithSelectState:(BOOL)isSelect {
+    if (!isSelect) {
+        self.backgroundColor = [UIColor clearColor];
+        return;
+    }
+    NSArray *colors = self.config.menuViewSelectCellBgColors;
+    UIColor *color = self.config.menuViewSelectCellBgColor;
+    if (colors && self.listViewIndex <= (int)[colors count]-1) {
+        self.backgroundColor = colors[self.listViewIndex];
+    } else if (color) {
+        self.backgroundColor = color;
+    } else {
+        self.backgroundColor = [UIColor clearColor];
+    }
 }
 
 

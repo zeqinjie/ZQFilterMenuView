@@ -15,8 +15,11 @@ typedef NS_ENUM(NSInteger, TabControlType) {
 };
 
 @class ZQItemModel,ZQFliterSelectData,ZQTabControl,ZQFilterMenuControlConfig;
-typedef void(^ZQTabDidSelectedMenuAllDataBlock)(ZQTabControl *tabControl,NSInteger flag, ZQFliterSelectData *selectData, ZQItemModel *selectModel);
+typedef void(^ZQTabDidSelectedMenuAllDataBlock)(ZQTabControl *tabControl, ZQFliterSelectData *selectData, ZQItemModel *selectModel);
+typedef void(^ZQTabDidFinishedSelectedMenuAllDataBlock)(ZQTabControl *tabControl, ZQFliterSelectData *selectData, ZQItemModel *selectModel);
 typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
+typedef  void (^ZQTabEnsureClickDisable)(ZQTabControl *tabControl, ZQFliterSelectData *selectData);
+
 @interface ZQTabControl : UIButton
 @property (nonatomic, copy, readonly) NSString *title;
 @property (nonatomic, strong, readonly) ZQFilterMenuControlConfig *config;
@@ -24,10 +27,15 @@ typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
 @property (nonatomic, copy) ZQTabDisplayCustomWithMenu displayCustomWithMenu;
 @property (nonatomic, strong) NSArray <ZQItemModel *>*listDataSource;
 
+/// 是否能禁止确定
+@property (nonatomic, copy) ZQTabEnsureClickDisable ensureClickDisableBlock;
 /**
 第几选中的回调
 */
 @property (nonatomic, copy) ZQTabDidSelectedMenuAllDataBlock didSelectedMenuAllData;
+
+/// 选中操作事件已处理完毕的回调
+@property (nonatomic, copy) ZQTabDidFinishedSelectedMenuAllDataBlock didFinishedSelectedMenuAllDataBlock;
 
 /// **************** menuview 的部分
 /**
@@ -45,7 +53,7 @@ typedef UIView *(^ZQTabDisplayCustomWithMenu)(void);
 
 /** 用于调整 自定义视图选中时文字的显示 */
 - (void)adjustTitle:(NSString *)title textColor:(UIColor *)color;
-//隐藏
+/// 隐藏
 - (void)dismissTabMenuBar;
 
 /** 按钮样式调整为图片*/

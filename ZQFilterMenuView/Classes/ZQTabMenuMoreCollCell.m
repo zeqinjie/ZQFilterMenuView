@@ -6,7 +6,7 @@
 //
 
 #import "ZQTabMenuMoreCollCell.h"
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import <Masonry/Masonry.h>
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuMoreCollCell()
@@ -25,14 +25,21 @@
 - (void)creatUI{
     self.titleLabel = [[UILabel alloc]init];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.titleLabel.numberOfLines = 1;
-    self.titleLabel.font = [UIFont systemFontOfSize:14];
+    self.titleLabel.numberOfLines = 0;
     self.titleLabel.textColor = [UIColor colorWithHexString:@"222222"];
     [self.contentView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.right.left.bottom.equalTo(self.contentView);
+        make.right.left.equalTo(self.contentView);
+        make.top.equalTo(self.contentView).offset(1);
+        make.bottom.equalTo(self.contentView).offset(-1);
     }];
     [self didSelectColor:NO];
+}
+
+-(void)setConfig:(ZQFilterMenuMoreViewConfig *)config {
+    _config = config;
+    self.titleLabel.font = config.moreCellTitleFont;
+    self.titleLabel.adjustsFontSizeToFitWidth = YES;
 }
 
 - (void)setIsChoice:(BOOL)isChoice{
@@ -45,11 +52,11 @@
     if (isDidSelect) {
         self.contentView.backgroundColor = self.config.moreCellSelectedBgColor;
         self.titleLabel.textColor = self.config.moreCellTitleSelectedColor;
-        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:self.config.moreCellSelectedBorderColor];
+        [self setClipsToBoundsView:self.contentView cornerRadius:self.config.moreCellCornerRadius borderWidth:self.config.moreCellBorderWidth borderColor:self.config.moreCellSelectedBorderColor];
     }else{
         self.contentView.backgroundColor = self.config.moreCellNormalBgColor;
         self.titleLabel.textColor = self.config.moreCellTitleNormalColor;
-        [self setClipsToBoundsView:self.contentView cornerRadius:0 borderWidth:1 borderColor:self.config.moreCellNormalBorderColor];
+        [self setClipsToBoundsView:self.contentView cornerRadius:self.config.moreCellCornerRadius borderWidth:self.config.moreCellBorderWidth borderColor:self.config.moreCellNormalBorderColor];
     }
 }
 

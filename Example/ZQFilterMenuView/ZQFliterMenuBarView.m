@@ -228,8 +228,8 @@
     
     ZQTabControl *tabControl = [ZQTabControl tabControlWithConfig:config];
     tabControl.tag = tag;
-    tabControl.didSelectedMenuAllData = ^(ZQTabControl *tabControl, NSInteger flag, ZQFliterSelectData *selectData, ZQItemModel *selectModel) {
-        NSLog(@"确定选中 selectData = %@",selectData);
+    tabControl.didSelectedMenuAllData = ^(ZQTabControl *tabControl, ZQFliterSelectData *selectData, ZQItemModel *selectModel) {
+        NSLog(@"确定选中 selectData = %@",[selectData getSelectParameDic]);
     };
     if (controlCustomView) {
         tabControl.displayCustomWithMenu = ^UIView *{

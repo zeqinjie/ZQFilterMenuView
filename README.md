@@ -56,6 +56,10 @@ pod 'ZQFilterMenuView'
 - v0.1.3: 修复闪现bug
 - v0.1.4: 设置间距大小，补充 config 样式参数
 - v0.1.5: 重命名部分变量
+- v0.1.6: 重命名部分变量, 增加自定义配置项
+    - 筛选组件 moreview 界面改造，支持多列等
+    - 增加隐藏 item 的功能
+
 
 ## Author
 

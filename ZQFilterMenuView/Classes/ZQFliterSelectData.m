@@ -65,6 +65,9 @@
 /// @param listDataSource 上一组的数据源
 /// @param listViewIndex 当前展示的tableViewt.tag 即时第几列
 - (NSArray *)getFirstListDataSource:(NSArray *)listDataSource listViewIndex:(NSInteger)listViewIndex{
+    if (listViewIndex > 1) {
+        return @[];
+    }
     NSArray *lastArr = listDataSource;
     ZQItemModel *selectModel = lastArr.firstObject;
     lastArr = selectModel.dataSource;
@@ -183,15 +186,14 @@
     return selectTitle;
 }
 
+
 /// 更新数据选择项
 /// @param listDataSource 数据源
 /// @param orginSelectData 重置数据源 非必传，重置需要,否则只是更新model 的 selected
 /// @param selectIndex listIndex 必须传-1 方便递归计算
-/// @param flag 0 默认方式，如果为1 如果只选中第一列任何一项，则重置为第一项区域
 - (void)updateSeletedListDataSource:(NSArray<ZQItemModel *> *)listDataSource
                     orginSelectData:(nullable ZQFliterSelectData *)orginSelectData
-                        selectIndex:(NSInteger)selectIndex
-                               flag:(NSInteger)flag{
+                        selectIndex:(NSInteger)selectIndex {
     if (listDataSource && listDataSource.count) {
         selectIndex++;
         if (selectIndex < kMAXCount) { //最大支持三个级列表
@@ -214,7 +216,7 @@
                     }
                 }
                 NSArray *dataSource = model.dataSource;
-                [self updateSeletedListDataSource:dataSource orginSelectData:orginSelectData selectIndex:selectIndex flag:flag];
+                [self updateSeletedListDataSource:dataSource orginSelectData:orginSelectData selectIndex:selectIndex];
             }
         }
     }
@@ -446,6 +448,14 @@
         ZQItemModel *selectModel = [dataSource objectAtIndex:row];
         selectModel.seleceted = YES;
     }
+}
+
+/// 创建当前选择数据对象
++ (ZQFliterSelectData *)createSelectData:(NSArray<ZQItemModel *> *)dataSource{
+    ZQFliterSelectData *selectData = [[ZQFliterSelectData alloc]init];
+    selectData.fatherDataSource = dataSource;
+    [selectData reloadSeletedListDataSource:dataSource selectIndex:-1];
+    return selectData;
 }
 
 ZQLuckyMutableCopyImplementation

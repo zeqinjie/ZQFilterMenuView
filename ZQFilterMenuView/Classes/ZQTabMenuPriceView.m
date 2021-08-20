@@ -9,7 +9,7 @@
 //#import "UIView+ShowHUD.h"
 #import "ZQSeperateLine.h"
 #import <Masonry/Masonry.h>
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import "ZQFliterModelHeader.h"
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuPriceView()<UITextFieldDelegate>
@@ -130,32 +130,33 @@
     return textField;
 }
 
-- (BOOL)textFieldGuide:(UITextField *)textField{
+- (ZQTabMenuPriceViewInputIncorrectType)textFieldGuide:(UITextField *)textField{
     BOOL isFix = NO;
+    ZQTabMenuPriceViewInputIncorrectType inputType = ZQTabMenuPriceViewInputIncorrectTypeNoInput;
     if (self.maxTextField.text.length && self.minTextField.text.length) {
         CGFloat endF = self.maxTextField.text.floatValue;
         CGFloat beF = self.minTextField.text.floatValue;
-        if (endF >= beF) {
+        if (endF > beF) {
             isFix = YES;
+            inputType = ZQTabMenuPriceViewInputIncorrectTypeIncorrect;
         }
         if (self.maxTextField == textField) {
             if (!isFix) {
-//                [self hideHUDWithStr:@"請輸入值大於最小金額"];
+                inputType = ZQTabMenuPriceViewInputIncorrectTypeMaxIncorrect;
                 textField.text = @"";
             }
-            
         }else{
             if (!isFix) {
-//                [self hideHUDWithStr:@"請輸入值小於最大金額"];
+                inputType = ZQTabMenuPriceViewInputIncorrectTypeMinIncorrect;
                 textField.text = @"";
             }
         }
     }else if(self.maxTextField.text.length == 0 && self.minTextField.text.length == 0){
-//        [self hideHUDWithStr:@"請輸入金額"];
+        inputType = ZQTabMenuPriceViewInputIncorrectTypeNoInput;
     }else{
-        isFix = YES;
+        inputType = ZQTabMenuPriceViewInputIncorrectTypeIncorrect;
     }
-    return isFix;
+    return inputType;
 }
 
 #pragma mark - Public
@@ -216,29 +217,27 @@
 
 #pragma mark - Action
 - (void)confirmButtonAction{
-    BOOL fix = NO;
+//    BOOL fix = NO;
+    ZQTabMenuPriceViewInputIncorrectType inputType = ZQTabMenuPriceViewInputIncorrectTypeNoInput;
     UITextField *textField;
     if ([self.minTextField isFirstResponder]) {
-        fix = [self textFieldGuide:self.minTextField];
+        inputType = [self textFieldGuide:self.minTextField];
         textField = self.minTextField;
     }else{
-        fix = [self textFieldGuide:self.maxTextField];
+        inputType = [self textFieldGuide:self.maxTextField];
         textField = self.maxTextField;
     }
-    if (fix) {
-        [textField resignFirstResponder];
-        if (self.inputValueBlock) {
-            if ([self getInputTitle]) {
-                [self.tabControl setControlTitle:[self getInputTitle]];
-                self.lastValidMaxText = self.maxTextField.text;
-                self.lastValidMinText = self.minTextField.text;
-                self.inputValueBlock(self.tag, [self getInputTitle],[self getInputIdDic]);
-            }
+    [textField resignFirstResponder];
+    if (self.inputValueBlock) {
+        if (inputType == ZQTabMenuPriceViewInputIncorrectTypeIncorrect && [self getInputTitle]) {
+            [self.tabControl setControlTitle:[self getInputTitle]];
+            self.lastValidMaxText = self.maxTextField.text;
+            self.lastValidMinText = self.minTextField.text;
+            self.inputValueBlock(self.tag,[self getInputTitle], [self getInputIdDic]);
         }
-    } else {
-        if (self.incompatibleBlock) {
-            self.incompatibleBlock();
-        }
+    }
+    if (self.ensureInputTypeBlock) {
+        self.ensureInputTypeBlock(inputType);
     }
 }
 

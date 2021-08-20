@@ -3,12 +3,12 @@
 //  house591
 //
 //  Created by zhengzeqin on 2020/5/18.
-//  
+//
 //
 
 #import "ZQTabControl.h"
 #import "ZQTabMenuBar.h"
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import "ZQFilterMenuTool.h"
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabControl ()
@@ -22,6 +22,10 @@
 @property (nonatomic, assign) BOOL isShowPic;
 /** 配置对象 */
 @property (nonatomic, strong, readwrite) ZQFilterMenuControlConfig *config;
+/// 非选中图片
+@property (nonatomic, strong) NSString *norImgStr;
+/// 选中图片
+@property (nonatomic, strong) NSString *selImgStr;
 
 @end
 
@@ -51,8 +55,10 @@
 
 - (void)adjustFrame {
     if (!_isShowPic) {
-        [self setTitleEdgeInsets:UIEdgeInsetsMake(0, -self.imageView.bounds.size.width + 2, 0, self.imageView.bounds.size.width + 10)];
-        [self setImageEdgeInsets:UIEdgeInsetsMake(0, self.titleLabel.bounds.size.width + 10, 0, -self.titleLabel.bounds.size.width + 2)];
+        CGFloat offset = 2;
+        CGFloat toAddSpacing = self.config.iconAndTitleSpacing + offset;
+        [self setTitleEdgeInsets:UIEdgeInsetsMake(0, -self.imageView.bounds.size.width + offset, 0, self.imageView.bounds.size.width + toAddSpacing)];
+        [self setImageEdgeInsets:UIEdgeInsetsMake(0, self.titleLabel.bounds.size.width + toAddSpacing, 0, -self.titleLabel.bounds.size.width + offset)];
     }
 }
 
@@ -78,7 +84,11 @@
 - (void)setTitle:(NSString *)title forState:(UIControlState)state{
     if (_isShowPic) {
         // 重置值
-        _isHadChoice = ![self.title isEqualToString:title];
+        if (title.length == 0) {
+            [self setImage:[UIImage imageNamed:self.norImgStr] forState:UIControlStateNormal];
+        } else {
+            [self setImage:[UIImage imageNamed:self.selImgStr] forState:UIControlStateNormal];
+        }
     }else{
         [super setTitle:title forState:state];
     }
@@ -92,16 +102,6 @@
     [super setTitleColor:color forState:state];
 }
 
-- (void)setSelected:(BOOL)selected{
-    if (_isShowPic) {
-        if (!_isHadChoice) { //是有没有选择的赋值
-            [super setSelected:selected];
-        }
-    }else{
-        [super setSelected:selected];
-    }
-}
-
 - (void)showPicNorImgStr:(NSString *)norImgStr selImgStr:(NSString *)selImgStr{
     if (norImgStr.length && selImgStr.length) {
         _isShowPic = YES;
@@ -111,8 +111,15 @@
 
 - (void)setNorImgStr:(NSString *)norImgStr selImgStr:(NSString *)selImgStr{
     if (norImgStr.length && selImgStr.length) {
-        [self setImage:[UIImage imageNamed:norImgStr] forState:UIControlStateNormal];
-        [self setImage:[UIImage imageNamed:selImgStr] forState:UIControlStateSelected];
+        self.norImgStr = norImgStr;
+        self.selImgStr = selImgStr;
+        if (_isShowPic) {
+            [self setImage:[UIImage imageNamed:norImgStr] forState:UIControlStateNormal];
+            [self setImage:nil forState:UIControlStateSelected];
+        } else {
+            [self setImage:[UIImage imageNamed:norImgStr] forState:UIControlStateNormal];
+            [self setImage:[UIImage imageNamed:selImgStr] forState:UIControlStateSelected];
+        }
     }
 }
 

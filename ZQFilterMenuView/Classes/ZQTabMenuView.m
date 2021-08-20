@@ -12,9 +12,8 @@
 #import "ZQTabMenuMoreView.h"
 #import "ZQTabMenuTableViewCell.h"
 #import "ZQTabMenuEnsureView.h"
-#import "ZQFliterSelectData.h"
 #import "ZQFliterModelHeader.h"
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #define kMAXCount  3 //最大多少列
 #define kMutitTitle @"多選"
 //#define ZQTabMenuViewHeigthRatio      0.4
@@ -27,7 +26,6 @@
 @property (nonatomic, assign) NSInteger secondSelectRow;//第二列选中
 @property (nonatomic, assign) NSInteger lastSelectRow;//第三列选中
 @property (nonatomic, strong) NSArray *tableViewArr;
-@property (nonatomic, assign) BOOL flag;//标记，用于记录是否是恢复上次的选中
 //@property (nonatomic, assign) NSInteger selectIndex;//设置多级选中下标
 
 @property (nonatomic, strong) ZQFliterSelectData *orginSelectData;//第一次进来的数据源
@@ -56,6 +54,7 @@
 - (instancetype)initWithTabControl:(ZQTabControl *)tabControl {
     if (self = [super init]) {
         self.tabControl = tabControl;
+        self.ensureClickDisableBlock = tabControl.ensureClickDisableBlock;
         self.menuSecondListFirSelected = tabControl.menuSecondListFirSelected;
         self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.6];
         [self reloadSeletedListDataSource];
@@ -63,12 +62,15 @@
     return self;
 }
 
-- (void)displayTabMenuViewWithMenuBar:(UIView *)menuBar withTopOffsetY:(CGFloat)offsetY
-{
-    if (!self.superview) {
+- (void)displayTabMenuViewWithMenuBar:(UIView *)menuBar
+                       withTopOffsetY:(CGFloat)offsetY {
+    if (![self isHadShow]) { // !self.superview
         // 初始位置 设置
         CGFloat x = 0.f;
         CGFloat y = menuBar.frame.origin.y + menuBar.frame.size.height + offsetY;
+        if (self.tabControl.config.isMenuViewOnTop) {
+            y = 0;
+        }
         CGFloat w = ZQScreenWidth;
         CGFloat h = ZQScreenHeight - y;
         self.frame = CGRectMake(x, y, w, h);
@@ -80,7 +82,11 @@
                         ZQTabMenuMoreView *menuMoreView = (ZQTabMenuMoreView *)customView;
                         menuMoreView.tabControl = self.tabControl;
                     }
-                    [self addSubview:customView];
+                    if (self.tabControl.config.menuViewAnimationType != ZQFilterMenuViewAnimationTypeDefault) {
+                        [self showView:customView animationType:self.tabControl.config.menuViewAnimationType];
+                    } else {
+                        [self addSubview:customView];
+                    }
                 }
             }
         }else {
@@ -89,7 +95,7 @@
         }
         if ([self.delegate respondsToSelector:@selector(tabMenuViewToSuperview)]
             && [self.delegate tabMenuViewToSuperview]) {
-            //有指定使用指定父视图
+            // 有指定使用指定父视图
             [[self.delegate tabMenuViewToSuperview] addSubview:self];
         }else{
             [menuBar.superview addSubview:self];
@@ -103,9 +109,81 @@
     }
 }
 
+// 添加view 并设置出场动画效果
+- (void)showView:(UIView *)view animationType:(ZQFilterMenuViewAnimationType)type {
+    CGRect finalRect = view.frame;
+    CGRect rect = view.frame;
+    switch (type) {
+        case ZQFilterMenuViewAnimationTypeFlipFromRight:
+            rect.origin.x += self.frame.size.width;
+            view.frame = rect;
+            break;
+        case ZQFilterMenuViewAnimationTypeFlipFromLeft:
+            rect.origin.x -= self.frame.size.width;
+            view.frame = rect;
+            break;
+        case ZQFilterMenuViewAnimationTypeCurlUp:
+            rect.origin.y += self.frame.size.height;
+            view.frame = rect;
+            break;
+        case ZQFilterMenuViewAnimationTypeCurlDown:
+            rect.origin.y -= self.frame.size.height;
+            view.frame = rect;
+            break;
+        default:
+            break;
+    }
+    [self addSubview:view];
+    [UIView animateWithDuration:0.25 animations:^{
+        view.frame = finalRect;
+    }];
+}
+
+- (BOOL)isHadShow {
+    return self.superview != nil;
+}
+
 #pragma mark - Public Method
 - (void)resetAllSelectData{
     [ZQFliterSelectData resetAllSelectDataSource:self.listDataSource type:0 row:-1 selectIndex:-1];
+}
+
+/// 模拟点击 tableView list
+/// @param indexPaths 下标数据源对象
+- (void)didSelectTableViewIndexPaths:(NSArray<NSArray<NSIndexPath *> *> *)indexPaths {
+    for (NSInteger i = 0; i < indexPaths.count; i++) {
+        if (i < self.tableViewArr.count) {
+            UITableView *tableView = self.tableViewArr[i];
+            NSArray<NSIndexPath *> *indexPathArr = indexPaths[i];
+            for (NSIndexPath *indexPath in indexPathArr) {
+                [self tableView:tableView didSelectRowAtIndexPath:indexPath];
+            }
+        }
+    }
+}
+
+// 确认操作 无需校验
+- (void)ensureSelected {
+    BOOL isMultiple = self.tabControl.tabControlType == TabControlTypeMultiple;
+    if (isMultiple){ ////数据回传 多选确定
+        if (self.tabControl.didSelectedMenuAllData) {
+            self.tabControl.didSelectedMenuAllData(self.tabControl, self.selectData, nil);
+        }
+    }
+    //确定选中，则更新数据源的select 状态
+    if ([self.selectData getChoiceCount] == 1) { //如果只选中一项，情况重置为区域
+        [self.selectData removeSonSelectDataAllSelectModel]; //清空所有选择
+        ZQItemModel *firstModel = [self.selectData addFirstSelectedModelDataSource:self.listDataSource index:0]; //选中第一项
+        [self.selectData resetSelectLastModelDataSource:firstModel.dataSource listViewIndex:0]; //重置后面
+    }
+    [self resetActionDisplayText:[self.selectData getActionDisplayText] showType:0];
+    //更新所有数据
+    [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:nil selectIndex:-1];
+    [self dismiss];
+    // 数据选中操作已完成
+    if (isMultiple && self.tabControl.didFinishedSelectedMenuAllDataBlock) {
+        self.tabControl.didFinishedSelectedMenuAllDataBlock(self.tabControl, self.selectData, nil);
+    }
 }
 
 #pragma mark - Private Method
@@ -115,10 +193,16 @@
  @param count 为对于展示tabelviewe个数
  */
 - (void)adjustTableViewsWithCount:(NSInteger)count{
+    if (self.tabControl.config.menuViewIsUnFoldAllTableViews) {
+        count = self.tableViewArr.count;
+    }
     if (self.showListViewCount != count) { //展示的个数调整
         self.showListViewCount = count;
         CGRect adjustFrame = self.frame;
-        CGFloat height = adjustFrame.size.height * self.tabControl.config.menuViewHeigthRatio;
+        CGFloat height = self.tabControl.config.menuViewHeigth;
+        if (self.tabControl.config.menuViewHeigth == 0) {
+            height = adjustFrame.size.height * self.tabControl.config.menuViewHeigthRatio;
+        }
         CGFloat menuLargthHeigth = self.tabControl.config.menuViewLargthHeight;
         if (menuLargthHeigth != 0) {//注意如果不是0 则限制最大高度
             if (height > menuLargthHeigth) {
@@ -145,14 +229,17 @@
         }
         
         adjustFrame.size.height = adjustFrame.size.height -  _menuFooterView.frame.size.height;
+        NSArray *tableViewWidthRadioArr = self.tabControl.config.menuViewTableViewWidthRatioArr;
         CGFloat tableViewWidth = ZQScreenWidth / count;
         UITableView *lastView = nil;
         for (NSInteger i = 0; i < self.tableViewArr.count; i++) {
             UITableView *tableView = self.tableViewArr[i];
             if (i > count - 1) {//无需展示的设置宽度0
                 tableViewWidth = 0;
-            }
-            if (count == 3) { //三分
+            } else if (tableViewWidthRadioArr && tableViewWidthRadioArr.count == count) { // 如果设置了宽度比例数组
+                NSNumber *widthRatio = tableViewWidthRadioArr[i];
+                tableViewWidth = ZQScreenWidth * widthRatio.floatValue;
+            } else if (count == 3) { //三分
                 if (i == count - 1) {
                     tableViewWidth = ZQScreenWidth * 0.4;
                 }else{
@@ -254,34 +341,32 @@
     return self.tabControl.config.menuViewTableViewSeparatorColor;
 }
 
-#pragma mark - Action
-//多选的重置
-- (void)retSetAction{
+
+/// 重置原始数据状态，非真正选中
+/// @param orginSelectData 选中数据源对象
+- (void)retSetActionOrginSelectData:(ZQFliterSelectData *)orginSelectData {
     [self.selectData removeSonSelectDataAllSelectModel];
-    [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:self.orginSelectData selectIndex:-1 flag:0];
+    [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData: orginSelectData selectIndex:-1];
     [self adjustTableViewsWithCount:[self.selectData getShowListViewCount]];
     [self reloadAllList];
     [self scrollAllTableIndex];
 }
 
-//多选的确认
+#pragma mark - Action
+// 多选的重置
+- (void)retSetAction{
+    [self retSetActionOrginSelectData:self.orginSelectData];
+}
+
+// 多选的确认事件
 - (void)ensureAction{
-    if (self.tabControl.tabControlType == TabControlTypeMultiple){ ////数据回传 多选确定
-        if (self.tabControl.didSelectedMenuAllData) {
-            self.tabControl.didSelectedMenuAllData(self.tabControl, 1, self.selectData,nil);
-        }
+    if (self.ensureClickDisableBlock) {
+        self.ensureClickDisableBlock(self.tabControl, self.selectData);
     }
-    //确定选中，则更新数据源的select 状态
-    if ([self.selectData getChoiceCount] == 1) { //如果只选中一项，情况重置为区域
-        [self.selectData removeSonSelectDataAllSelectModel]; //清空所有选择
-        ZQItemModel *firstModel = [self.selectData addFirstSelectedModelDataSource:self.listDataSource index:0]; //选中第一项
-        [self.selectData resetSelectLastModelDataSource:firstModel.dataSource listViewIndex:0]; //重置后面
+    if (self.ensureClickDisable) { /// 不能确定
+        return;
     }
-    [self resetActionDisplayText:[self.selectData getActionDisplayText] showType:0];
-    //更新所有数据
-    [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:nil selectIndex:-1 flag:0];
-    [self dismiss];
-    
+    [self ensureSelected];
 }
 
 //#pragma mark - Override Method
@@ -345,7 +430,7 @@
     if(!_ensureView){
         ZQWS(weakSelf);
         _ensureView = [[ZQTabMenuEnsureView alloc] initWithConfig:self.tabControl.config.ensureViewConfig];
-        _ensureView.frame = CGRectMake(0, 0, ZQScreenWidth, 71);
+        _ensureView.frame = CGRectMake(0, 0, ZQScreenWidth, self.tabControl.config.ensureViewConfig.ensureViewHeight);
         _ensureView.clickAction = ^(NSInteger tag) {
             if (tag == 1) { // 重置
                 [weakSelf retSetAction];
@@ -361,10 +446,8 @@
 //刷新选中数据UI
 - (void)reloadSeletedListDataSource{
     //初始化数据源
-    self.selectData = [[ZQFliterSelectData alloc]init];
     self.listDataSource = self.tabControl.listDataSource;
-    self.selectData.fatherDataSource = self.listDataSource;
-    [self.selectData reloadSeletedListDataSource:self.listDataSource selectIndex:-1];
+    self.selectData = [ZQFliterSelectData createSelectData:self.listDataSource];
     NSString *selectedTitle = [self.selectData getActionDisplayText];
     if (selectedTitle) { //設置title
         [self.tabControl setControlTitle:selectedTitle];
@@ -383,10 +466,10 @@
 
     if (self.tabControl.tabControlType == TabControlTypeDefault) {
         if (self.tabControl.didSelectedMenuAllData) {
-            self.tabControl.didSelectedMenuAllData(self.tabControl, 0, self.selectData,selectModel);
+            self.tabControl.didSelectedMenuAllData(self.tabControl, self.selectData,selectModel);
         }
         //更新数据
-        [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:nil selectIndex:-1 flag:0];
+        [self.selectData updateSeletedListDataSource:self.listDataSource orginSelectData:nil selectIndex:-1];
         NSInteger type = 0;
         if ([selectModel isShowUnlimited]) {//不限 展示父的title
             ZQItemModel *father = selectModel.fatherModel;
@@ -416,6 +499,7 @@
     cell.config = self.tabControl.config;
     cell.model = model;
     ZQFliterSelectData *childSelectData = self.selectData.dict[@(listViewIndex)];
+    cell.listViewIndex = listViewIndex;
     cell.isChoice = [childSelectData isChoiceModel:model];
     return cell;
 }
@@ -462,12 +546,41 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionFooterView:)]) {
+        return [self.delegate tabMenuViewSectionFooterView:self];
+    }
     return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionFooterViewHeight:)]) {
+        return [self.delegate tabMenuViewSectionFooterViewHeight:self];
+    }
     return 0;
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionHeaderView:)]) {
+        UIView *headerView = [self.delegate tabMenuViewSectionHeaderView:self];
+        NSArray *colors = self.tabControl.config.menuViewSectionHeaderBgColors;
+        UIColor *color = self.tabControl.config.menuViewSectionHeaderBgColor;
+        if (colors && section <= (int)[colors count]-1) {
+            headerView.backgroundColor = colors[section];
+        } else if (color) {
+            headerView.backgroundColor = color;
+        } else {
+            headerView.backgroundColor = UIColor.clearColor;
+        }
+        return headerView;
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionHeaderViewHeight:)]) {
+        return [self.delegate tabMenuViewSectionHeaderViewHeight:self];
+    }
+    return 0;
+}
 
 @end

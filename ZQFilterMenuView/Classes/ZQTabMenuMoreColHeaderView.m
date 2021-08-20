@@ -7,7 +7,7 @@
 
 #import "ZQTabMenuMoreColHeaderView.h"
 #import <Masonry/Masonry.h>
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 #import "ZQFilterMenuConfig.h"
 @interface ZQTabMenuMoreColHeaderView()
 
@@ -28,16 +28,17 @@
     self.titleLabel.textColor = [UIColor colorWithHexString:@"333333"];
     self.titleLabel.font = [UIFont boldSystemFontOfSize:18];
     [self addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(@20);
-        make.left.equalTo(@20);
-        make.height.equalTo(@16);
-    }];
 }
 
 - (void)setConfig:(ZQFilterMenuMoreViewConfig *)config {
     _config = config;
     self.titleLabel.textColor = config.moreSectionHeaderTitleColor;
+    self.titleLabel.font = config.sectionHeaderTitleFont;
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(config.sectionHeaderTitleLabelTopSpace);
+        make.left.mas_equalTo(config.sectionHeaderTitleLabelLeftSpace);
+        make.height.mas_equalTo(config.sectionHeaderTitleLabelHeight);
+    }];
 }
 
 @end

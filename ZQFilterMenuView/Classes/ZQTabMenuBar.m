@@ -11,7 +11,7 @@
 #import "ZQTabMenuView.h"
 #import "ZQSeperateLine.h"
 #import "ZQFliterModelHeader.h"
-#import <ZQFoundationKit/UIColor+Util.h>
+#import "UIColor+Util.h"
 @interface ZQTabMenuBar () <ZQTabMenuViewDelegate>
 
 @property (nonatomic, assign) CGRect orginFrame;
@@ -115,9 +115,28 @@
         }
     }];
     self.showMenuView = showMenuView;
-    [showMenuView displayTabMenuViewWithMenuBar:self withTopOffsetY:self.menuTopOffsetY];
+    [showMenuView displayTabMenuViewWithMenuBar:self withTopOffsetY:self.config.menuTopOffsetY];
+    if ([self.delegate respondsToSelector:@selector(tabMenuView:didClickTabControl:)]) {
+        [self.delegate tabMenuView:self didClickTabControl:tabControl];
+    }
 }
 
+#pragma mark - Private Method
+- (void)adjustFrameWithShowDetail:(BOOL)show {
+    if (show) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.frame = self.showFilterFrame;
+            self.currentTab.selected = YES;
+        }];
+    }else {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.frame = self.orginFrame;
+            self.currentTab.selected = NO;
+        }];
+    }
+}
+
+#pragma mark - Public Method
 - (void)clearShowMenuAllSelected{
     [self.showMenuView resetAllSelectData];
     [self reloadMenus];
@@ -141,18 +160,29 @@
     }];
 }
 
-- (void)adjustFrameWithShowDetail:(BOOL)show {
-    if (show) {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.frame = self.showFilterFrame;
-            self.currentTab.selected = YES;
-        }];
-    }else {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.frame = self.orginFrame;
-            self.currentTab.selected = NO;
-        }];
+/// 模拟点击 tableView cell 非真正选择
+/// @param indexPaths 下标数据源对象
+- (void)didSelectedMenusIndex:(NSInteger)index
+          tableViewIndexPaths:(NSArray<NSArray<NSIndexPath *> *> *)indexPaths {
+    ZQTabMenuView *menuView = self.menus[index];
+    ZQTabControl *tabControl = self.tabControls[index];
+    self.currentTab = tabControl;
+    if (![menuView isHadShow]) { // 已经展示了的不需要再展开 menu
+        [self tabControlDidClick:tabControl];
     }
+    [menuView didSelectTableViewIndexPaths:indexPaths];
+}
+
+/// 模拟点击多选确定按钮点击
+- (void)didSelectedMenusEnsureClickIndex:(NSInteger)index {
+    ZQTabMenuView *menuView = self.menus[index];
+    [menuView ensureAction];
+}
+
+- (void)setEnsureSelectedMenusIndex:(NSInteger)index
+                 ensureClickDisable:(BOOL)ensureClickDisable {
+    ZQTabMenuView *menuView = self.menus[index];
+    menuView.ensureClickDisable = ensureClickDisable;
 }
 
 #pragma mark - ZQTabMenuBarDelegate
@@ -178,14 +208,42 @@
     return nil;
 }
 
-- (UIView *)tabMenuViewToSuperview{ //指定弹出菜单添加的父视图
-    if ([self.delegate respondsToSelector:@selector(tabMenuViewToSuperview)]) {
-        return [self.delegate tabMenuViewToSuperview];
+- (UIView *)tabMenuViewSectionFooterView:(ZQTabMenuBar *)view {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionFooterView:tabControl:)]) {
+        return [self.delegate tabMenuViewSectionFooterView:self tabControl:self.currentTab];
     }
     return nil;
 }
 
-#pragma mark - 懒加载
+- (CGFloat)tabMenuViewSectionFooterViewHeight:(ZQTabMenuView *)view {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionFooterViewHeight:tabControl:)]) {
+        return [self.delegate tabMenuViewSectionFooterViewHeight:self tabControl:self.currentTab];
+    }
+    return 0;
+}
+
+- (UIView *)tabMenuViewSectionHeaderView:(ZQTabMenuView *)view {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionHeaderView:tabControl:)]) {
+        return [self.delegate tabMenuViewSectionHeaderView:self tabControl:self.currentTab];
+    }
+    return nil;
+}
+
+- (CGFloat)tabMenuViewSectionHeaderViewHeight:(ZQTabMenuView *)view {
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewSectionHeaderViewHeight:tabControl:)]) {
+        return [self.delegate tabMenuViewSectionHeaderViewHeight:self tabControl:self.currentTab];
+    }
+    return 0;
+}
+
+- (UIView *)tabMenuViewToSuperview{ //指定弹出菜单添加的父视图
+    if ([self.delegate respondsToSelector:@selector(tabMenuViewToSuperview:tabControl:)]) {
+        return [self.delegate tabMenuViewToSuperview:self tabControl:self.currentTab];
+    }
+    return nil;
+}
+
+#pragma mark - Getter
 - (ZQSeperateLine *)bottomLine {
     if (!_bottomLine) {
         _bottomLine = [[ZQSeperateLine alloc] init];
@@ -198,10 +256,6 @@
         _menus = [NSMutableArray arrayWithCapacity:0];
     }
     return _menus;
-}
-
-- (void)dealloc {
-    NSLog(@"%s", __func__);
 }
 
 @end

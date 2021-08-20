@@ -30,6 +30,7 @@
         NSString *idStr = locationIds[i];
         NSString *titleStr = locationTitles[i];
         ZQItemModel *model = [ZQItemModel modelWithText:titleStr currentID:idStr isSelect:i == 0];
+        model.plistKey = @"area";
         NSArray *modelArr = [self creatMenuModels:plistKeys[i]
                                         secondKey:secondPlistKeys[i]
                                   firstSelectMode:0

@@ -61,11 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param listDataSource 数据源
 /// @param orginSelectData 重置数据源 非必传，重置需要,否则只是更新model 的 selected
 /// @param selectIndex listIndex 默认设置-1 开始
-/// @param flag 0 默认方式，如果为1 如果只选中第一列任何一项，则重置为第一项区域
 - (void)updateSeletedListDataSource:(NSArray<ZQItemModel *> *)listDataSource
                     orginSelectData:(nullable ZQFliterSelectData *)orginSelectData
-                        selectIndex:(NSInteger)selectIndex
-                               flag:(NSInteger)flag;
+                        selectIndex:(NSInteger)selectIndex;
 
 
 /// 一直清空下一组数据源
@@ -128,6 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
                             type:(NSInteger)type
                              row:(NSInteger)row
                      selectIndex:(NSInteger)selectIndex;
+
+
+/// 通过数据模型创建筛选配置对象
+/// @param dataSource 数据源
++ (ZQFliterSelectData *)createSelectData:(NSArray<ZQItemModel *> *)dataSource;
+
 @end
 
 NS_ASSUME_NONNULL_END

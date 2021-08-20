@@ -15,6 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfig:(ZQFilterMenuEnsureViewConfig *)config;
 
+/// 变成加载中状态
+- (void)setLoadingState;
+
+/// 变成加载完毕状态
+- (void)finishLoadingWithTitleStr:(NSString *)infoStr;
+
+/// 重置按钮状态             
+- (void)resetBtnState;
+
+// 设置确认按钮文字内容
+- (void)setConfirmBtnTitle:(NSString *)titleStr;
+
 @end
 
 NS_ASSUME_NONNULL_END
